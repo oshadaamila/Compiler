@@ -9,6 +9,8 @@ package com.company;
  * *
   */
 
+import static jdk.nashorn.internal.ir.LiteralNode.isConstant;
+
 public class Token
 {
     private TYPE type;
@@ -18,16 +20,44 @@ public class Token
         NEWLINE,
         START,
         VARIABLE,
+        CONSTANT,
+        TYPE,
+        FUNCTION,
+        RETURN,
+        BEGIN,
+        END,
+        SWAP,
+        ASSIGNMENT,
+        OUTPUT,IF,
+        THEN,
+        ELSE,
+        WHILE,
+        DO,
+        CASE,
+        OF,
+        DOTS,
+        OTHERWISE,
+        REPEAT,
+        FOR,
+        UNTIL,
+        LOOP,
+        POOL,
+        EXIT,
+        LESSTHANEQUAL,
+        NOTEQUAL,
+        LESSTHAN,
+        GREATERTHANEQUAL,
+        GREATERTHAN,
+        EQUAL,
+        MOD,
+        READ,
+        SUCC,
+        PRED,
         PLUS,
         MINUS,
         MULTIPLY,
-        ASSIGNMENT,
-        LESSTHAN,
         OPEN_PAREN,
         CLOSED_PAREN,
-        IF,
-        THEN,
-        ELSE,
         END_IF,
         NOT,
         OR,
@@ -62,10 +92,68 @@ public class Token
     {
         if (isReservedPlusOp(sToken)) {
             return TYPE.PLUS;
-        }else if(isVariable(sToken)){
+        }else if (isConst(sToken)){
+            return TYPE.CONSTANT;
+        }else if(isVariable(sToken)) {
             return TYPE.VARIABLE;
+        }else if(isType(sToken)) {
+            return TYPE.TYPE;
+        }else if (isFunction(sToken)) {
+            return TYPE.FUNCTION;
+        }else if (isReturn(sToken)) {
+            return TYPE.RETURN;
+        }else if (isBegin(sToken)) {
+            return TYPE.BEGIN;
+        }else if (isEnd(sToken)) {
+            return TYPE.END;
+        }else if(isSwap(sToken)) {
+            return TYPE.SWAP;
+        }else if(isOutput(sToken)) {
+            return TYPE.OUTPUT;
+        }else if (isWhile(sToken)) {
+            return TYPE.WHILE;
+        }else if (isDo(sToken)) {
+            return TYPE.DO;
+        }else if (isCase(sToken)) {
+            return TYPE.CASE;
+        }else if(isDots(sToken)) {
+            return TYPE.DOTS;
+        }else if (isOtherwise(sToken)) {
+            return TYPE.OTHERWISE;
+        }else if (isRepeat(sToken)){
+            return TYPE.REPEAT;
+        }else if (isFor(sToken)){
+            return TYPE.FOR;
+        }else if (isUntil(sToken)){
+            return TYPE.UNTIL;
+        }else if (isLoops(sToken)){
+            return TYPE.LOOP;
+        }else if (isPool(sToken)){
+            return TYPE.POOL;
+        }else if (isLessThanEqual(sToken)){
+            return TYPE.LESSTHANEQUAL;
+        }else if (isNotEqual(sToken)){
+            return TYPE.NOTEQUAL;
+        }else if (isGreaterThanEqual(sToken)){
+            return TYPE.GREATERTHANEQUAL;
+        }else if (isGreaterThan(sToken)){
+            return TYPE.GREATERTHAN;
+        }else if (isEqualToken(sToken)){
+            return TYPE.EQUAL;
+        }else if (isMod(sToken)){
+            return TYPE.MOD;
+        }else if (isRead(sToken)){
+            return TYPE.READ;
+        }else if (isSucc(sToken)){
+            return TYPE.SUCC;
+        }else if (isPred(sToken)){
+            return TYPE.PRED;
+        }else if (isExit(sToken)){
+            return TYPE.EXIT;
         } else if (isReservedMinusOp(sToken)) {
             return TYPE.MINUS;
+        }else if(isOf(sToken)){
+            return TYPE.OF;
         } else if(isReservedMultiplyOp(sToken)) {
             return TYPE.MULTIPLY;
         } else if(isReservedAssignmentOp(sToken)) {
@@ -117,6 +205,1725 @@ public class Token
         }else{
             return TYPE.IDENTIFIER;
         }
+    }
+
+    private static boolean isPred(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 4;
+
+        char next;
+
+        if (candidate.length() != 4) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'p':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'r':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'e':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 'd':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isSucc(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 4;
+
+        char next;
+
+        if (candidate.length() != 4) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 's':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'u':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'c':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 'c':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isRead(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 4;
+
+        char next;
+
+        if (candidate.length() != 4) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'r':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'e':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'a':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 'd':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isMod(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 3;
+
+        char next;
+
+        if (candidate.length() != 3) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'm':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'o':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'd':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isEqualToken(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 1;
+
+        char   next;
+
+        if (candidate.length()!=1){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case '=': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+
+    }
+
+    private static boolean isGreaterThan(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 1;
+
+        char   next;
+
+        if (candidate.length()!=1){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case '>': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isGreaterThanEqual(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 2;
+
+        char   next;
+
+        if (candidate.length()!=2){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case '>': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case '=': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isNotEqual(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 2;
+
+        char   next;
+
+        if (candidate.length()!=2){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case '<': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case '>': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isLessThanEqual(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 2;
+
+        char   next;
+
+        if (candidate.length()!=2){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case '<': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case '=': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isExit(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 4;
+
+        char next;
+
+        if (candidate.length() != 4) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'e':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'x':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'i':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 't':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isPool(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 4;
+
+        char next;
+
+        if (candidate.length() != 4) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'p':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'o':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'o':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 'l':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isLoops(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 4;
+
+        char next;
+
+        if (candidate.length() != 4) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'l':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'o':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'o':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 'p':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isUntil(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 5;
+
+        char next;
+
+        if (candidate.length() != 5) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'u':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'n':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 't':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 'i':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+                case 4:
+                    switch (next) {
+                        case 'l':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isFor(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 3;
+
+        char next;
+
+        if (candidate.length() != 3) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'f':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'o':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'r':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isRepeat(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 6;
+
+        char   next;
+
+        if (candidate.length()!=6){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case 'r': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case 'e': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch ( next )
+                    {
+                        case 'p': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch ( next )
+                    {
+                        case 'e': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 4:
+                    switch ( next )
+                    {
+                        case 'a': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 5:
+                    switch ( next )
+                    {
+                        case 't': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isOtherwise(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 9;
+
+        char   next;
+
+        if (candidate.length()!=8){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case 'o': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case 't': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch ( next )
+                    {
+                        case 'h': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch ( next )
+                    {
+                        case 'e': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 4:
+                    switch ( next )
+                    {
+                        case 'r': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 5:
+                    switch ( next )
+                    {
+                        case 'w': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 6:
+                    switch ( next )
+                    {
+                        case 'i': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+                case 7:
+                    switch ( next )
+                    {
+                        case 's': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+                case 8:
+                    switch ( next )
+                    {
+                        case 'e': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isDots(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 2;
+
+        char   next;
+
+        if (candidate.length()!=2){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case '.': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case '.': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isOf(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 2;
+
+        char   next;
+
+        if (candidate.length()!=2){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case 'o': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case 'f': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isCase(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 4;
+
+        char next;
+
+        if (candidate.length() != 4) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'c':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'a':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 's':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 'e':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isDo(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 2;
+
+        char   next;
+
+        if (candidate.length()!=2){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case 'd': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case 'o': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isWhile(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 5;
+
+        char next;
+
+        if (candidate.length() != 5) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'w':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'h':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'i':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 'l':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+                case 4:
+                    switch (next) {
+                        case 'e':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+
+    }
+
+    private static boolean isOutput(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 6;
+
+        char   next;
+
+        if (candidate.length()!=6){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case 'o': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case 'u': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch ( next )
+                    {
+                        case 't': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch ( next )
+                    {
+                        case 'p': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 4:
+                    switch ( next )
+                    {
+                        case 'u': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 5:
+                    switch ( next )
+                    {
+                        case 't': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+
+    }
+
+    private static boolean isSwap(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 3;
+
+        char next;
+
+        if (candidate.length() != 3) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case ':':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case '=':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case ':':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isEnd(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 3;
+
+        char next;
+
+        if (candidate.length() != 3) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'e':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'n':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'd':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+
+    }
+
+    private static boolean isBegin(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 5;
+
+        char next;
+
+        if (candidate.length() != 5) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'b':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'e':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'g':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 'i':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+                case 4:
+                    switch (next) {
+                        case 'n':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+
+    }
+
+    private static boolean isReturn(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 6;
+
+        char next;
+
+        if (candidate.length() != 6) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'r':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'e':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 't':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 'u':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+                case 4:
+                    switch (next) {
+                        case 'r':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+                case 5:
+                    switch (next) {
+                        case 'n':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isFunction(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 8;
+
+        char   next;
+
+        if (candidate.length()!=8){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case 'f': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case 'u': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch ( next )
+                    {
+                        case 'n': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch ( next )
+                    {
+                        case 'c': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 4:
+                    switch ( next )
+                    {
+                        case 't': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 5:
+                    switch ( next )
+                    {
+                        case 'i': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 6:
+                    switch ( next )
+                    {
+                        case 'o': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+                case 7:
+                    switch ( next )
+                    {
+                        case 'n': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+
+    }
+
+    private static boolean isType(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 4;
+
+        char next;
+
+        if (candidate.length() != 4) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 't':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'y':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'p':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch (next) {
+                        case 'e':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isConst(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 8;
+
+        char   next;
+
+        if (candidate.length()!=8){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case 'c': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case 'o': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch ( next )
+                    {
+                        case 'n': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch ( next )
+                    {
+                        case 's': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 4:
+                    switch ( next )
+                    {
+                        case 't': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 5:
+                    switch ( next )
+                    {
+                        case 'a': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 6:
+                    switch ( next )
+                    {
+                        case 'n': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+                case 7:
+                    switch ( next )
+                    {
+                        case 't': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
     }
 
     private static boolean isVariable(String candidate) {
@@ -341,11 +2148,11 @@ public class Token
 
     public static boolean isReservedAssignmentOp(String candidate) {
         int START_STATE    = 0;
-        int TERMINAL_STATE = 1;
+        int TERMINAL_STATE = 2;
 
         char   next;
 
-        if (candidate.length()!=1){
+        if (candidate.length()!=2){
             return false;
         }
 
@@ -356,6 +2163,13 @@ public class Token
             switch (state)
             {
                 case 0:
+                    switch ( next )
+                    {
+                        case ':': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+                case 1:
                     switch ( next )
                     {
                         case '=': state++; break;

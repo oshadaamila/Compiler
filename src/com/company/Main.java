@@ -14,8 +14,11 @@ public class Main {
 	// write your code here
         try {
             Scanner scanner = new Scanner("C:/Users/Oshada/IdeaProjects/Compiler/src/com/company/test.txt");
-            while(true){
+            int i = 0;
+            while(i<100){
                 Token a = scanner.getNextToken();
+                System.out.println(a.getType());
+                i = i+1;
             }
         } catch (IOException e) {
             e.printStackTrace();
