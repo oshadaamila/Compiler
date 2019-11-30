@@ -56,6 +56,17 @@ public class Scanner
             return new Token(Token.TYPE.SINGLELINECOMMENT);
         }
 
+        if(nextByte == '{'  ){
+            char temp='j';
+            while (temp!='}')
+            {
+                temp = (char) sourceFile.read();
+                if (temp == 65535)
+                    break;
+            }
+            return new Token(Token.TYPE.MULTILINECOMMENT);
+        }
+
 
         if( isSymbol( (char) nextByte) ){
             char temp = (char)sourceFile.read();

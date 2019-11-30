@@ -1,5 +1,12 @@
-
-:= program factors:
+{
+	This is a program to compute the factors of entered numbers.
+	It tests:
+		procedures
+		repeat loop
+		if statement
+		arithmetic
+}
+program factors:
 
 var
     i : integer; 
