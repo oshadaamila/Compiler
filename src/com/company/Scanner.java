@@ -25,11 +25,11 @@ public class Scanner
 
     public Token getNextToken() throws IOException, LexicalException
     {
-        if( nextToken != null ){
-            Token tmp = nextToken;
-            nextToken = null;
-            return tmp;
-        }
+//        if( nextToken != null ){
+//            Token tmp = nextToken;
+//            nextToken = null;
+//            return tmp;
+//        }
 
         String rawToken = "";
         int nextByte = getNextByte();
@@ -40,7 +40,7 @@ public class Scanner
             nextByte = getNextByte();
         }
         if( nextByte == -1 || nextByte == '�'){
-            return new Token(Token.TYPE.EOS);
+            return new Token(Token.TYPE.EOF);
         }
         if(nextByte == '\n'){
             return new Token(Token.TYPE.NEWLINE);

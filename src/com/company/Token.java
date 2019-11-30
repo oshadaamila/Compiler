@@ -53,6 +53,14 @@ public class Token
         READ,
         SUCC,
         PRED,
+        CHR,
+        ORD,
+        EOF,
+        BEGIN_BLOCK,
+        COLON,
+        SEMICOLON,
+        DOT,
+        COMMA,
         PLUS,
         MINUS,
         MULTIPLY,
@@ -65,16 +73,10 @@ public class Token
         SINGLELINECOMMENT,
         MULTILINECOMMENT,
         FORWARD_SLASH,
-        COMMA,
-        BOOLEAN,
-        TRUE,
-        FALSE,
-        COLON,
         INTEGER,
-        PRINT,
         IDENTIFIER,
-        NUMBER,
-        EOS
+        CHAR,
+        STRING
     }
 
     public Token(String word) throws LexicalException
@@ -152,8 +154,14 @@ public class Token
             return TYPE.EXIT;
         } else if (isReservedMinusOp(sToken)) {
             return TYPE.MINUS;
-        }else if(isOf(sToken)){
+        }else if (isORD(sToken)) {
+            return TYPE.ORD;
+        }else if (isCHR(sToken)) {
+            return TYPE.CHR;
+        }else if(isOf(sToken)) {
             return TYPE.OF;
+        }else if(isBeginBlock(sToken)){
+            return TYPE.BEGIN_BLOCK;
         } else if(isReservedMultiplyOp(sToken)) {
             return TYPE.MULTIPLY;
         } else if(isReservedAssignmentOp(sToken)) {
@@ -184,27 +192,195 @@ public class Token
             return TYPE.FORWARD_SLASH;
         } else if (isReservedComma(sToken)) {
             return TYPE.COMMA;
-        } else if (isReservedBoolean(sToken)) {
-            return TYPE.BOOLEAN;
-        } else if (isReservedTrue(sToken)) {
-            return TYPE.TRUE;
-        } else if (isReservedFalse(sToken)) {
-            return TYPE.FALSE;
+        }else if (isDot(sToken)) {
+            return TYPE.DOT;
         } else if (isReservedColon(sToken)) {
             return TYPE.COLON;
-        } else if (isReservedInteger(sToken)) {
+        }else if (isSemiColon(sToken)) {
+            return TYPE.SEMICOLON;
+        }else if (isInteger(sToken)) {
             return TYPE.INTEGER;
-        } else if (isReservedPrint(sToken)) {
-            return TYPE.PRINT;
-        } else if (isNumber(sToken)) {
-            return TYPE.NUMBER;
+        }else if (isString(sToken)) {
+            return TYPE.STRING;
         }else if(isNewLine(sToken)){
             return TYPE.NEWLINE;
         }else if(isStart(sToken)){
                return TYPE.START;
+        }else if(isChar(sToken)){
+            return TYPE.CHAR;
         }else{
             return TYPE.IDENTIFIER;
         }
+    }
+
+    private static boolean isDot(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 1;
+
+        char   next;
+
+        if (candidate.length()!=1){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case '.': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isBeginBlock(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 1;
+
+        char   next;
+
+        if (candidate.length()!=1){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case '{': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isCHR(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 3;
+
+        char next;
+
+        if (candidate.length() != 3) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'c':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'h':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'r':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isORD(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 3;
+
+        char next;
+
+        if (candidate.length() != 3) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'o':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'r':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'd':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+
+            }
+        }
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
     }
 
     private static boolean isPred(String candidate) {
@@ -2185,89 +2361,6 @@ public class Token
             return false;
     }
 
-
-    public static boolean isReservedBoolean(String candidate) {
-        int START_STATE    = 0;
-        int TERMINAL_STATE = 7;
-
-        char   next;
-
-        if (candidate.length()!=7){
-            return false;
-        }
-
-        int state = START_STATE;
-        for (int i = 0; i < candidate.length(); i++)
-        {
-            next = candidate.charAt(i);
-            switch (state)
-            {
-                case 0:
-                    switch ( next )
-                    {
-                        case 'b': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 1:
-                    switch ( next )
-                    {
-                        case 'o': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 2:
-                    switch ( next )
-                    {
-                        case 'o': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 3:
-                    switch ( next )
-                    {
-                        case 'l': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 4:
-                    switch ( next )
-                    {
-                        case 'e': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 5:
-                    switch ( next )
-                    {
-                        case 'a': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 6:
-                    switch ( next )
-                    {
-                        case 'n': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-            }
-        }
-
-        if ( state == TERMINAL_STATE )
-            return true;
-        else
-            return false;
-    }
-
-
     public static boolean isReservedClosedParen(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
@@ -2321,6 +2414,38 @@ public class Token
                     switch ( next )
                     {
                         case ':': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isSemiColon(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 1;
+
+        char   next;
+
+        if (candidate.length()!=1){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case ';': state++; break;
                         default : state = -1;
                     }
                     break;
@@ -2529,73 +2654,6 @@ public class Token
             return false;
     }
 
-
-    public static boolean isReservedFalse(String candidate) {
-        int START_STATE    = 0;
-        int TERMINAL_STATE = 5;
-
-        char   next;
-
-        if (candidate.length()!=5){
-            return false;
-        }
-
-        int state = START_STATE;
-        for (int i = 0; i < candidate.length(); i++)
-        {
-            next = candidate.charAt(i);
-            switch (state)
-            {
-                case 0:
-                    switch ( next )
-                    {
-                        case 'f': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 1:
-                    switch ( next )
-                    {
-                        case 'a': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 2:
-                    switch ( next )
-                    {
-                        case 'l': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 3:
-                    switch ( next )
-                    {
-                        case 's': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 4:
-                    switch ( next )
-                    {
-                        case 'e': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-            }
-        }
-
-        if ( state == TERMINAL_STATE )
-            return true;
-        else
-            return false;
-    }
-
-
     public static boolean isReservedForwardSlash(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
@@ -2670,85 +2728,56 @@ public class Token
     }
 
 
-    public static boolean isReservedInteger(String candidate) {
-        int START_STATE    = 0;
-        int TERMINAL_STATE = 7;
+    public static boolean isInteger(String num) throws LexicalException {
+        Long lowerBound = -4294967296L;
+        Long upperBound =  4294967295L;
 
-        char   next;
+        try {
 
-        if (candidate.length()!=7){
+            Long.valueOf(num).longValue();
+
+        } catch (NumberFormatException nfe) {
             return false;
         }
 
-        int state = START_STATE;
-        for (int i = 0; i < candidate.length(); i++)
-        {
-            next = candidate.charAt(i);
-            switch (state)
-            {
-                case 0:
-                    switch ( next )
-                    {
-                        case 'i': state++; break;
-                        default : state = -1;
-                    }
-                    break;
+        Long temp = Long.valueOf(num).longValue();
+        if( !(lowerBound<=temp) || !(upperBound>=temp) ){
 
-                case 1:
-                    switch ( next )
-                    {
-                        case 'n': state++; break;
-                        default : state = -1;
-                    }
-                    break;
+            throw new LexicalException("Number out of range");
+        }
 
-                case 2:
-                    switch ( next )
-                    {
-                        case 't': state++; break;
-                        default : state = -1;
-                    }
-                    break;
+        return true;
+    }
 
-                case 3:
-                    switch ( next )
-                    {
-                        case 'e': state++; break;
-                        default : state = -1;
-                    }
-                    break;
+    public static boolean isString(String str) throws LexicalException{
+        int length = str.length();
+        if (str.charAt(0) != '"'){
+            return false;
+        }
+        if(str.charAt(length -2) != '"'){
+            return false;
+        }
 
-                case 4:
-                    switch ( next )
-                    {
-                        case 'g': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 5:
-                    switch ( next )
-                    {
-                        case 'e': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 6:
-                    switch ( next )
-                    {
-                        case 'r': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
+        for (int i= 0 ;i< length ; i++){
+            if (str.charAt(0)=='"' && i<length-1){
+                return false;
             }
         }
+        return true;
+    }
 
-        if ( state == TERMINAL_STATE )
-            return true;
-        else
+    public static boolean isChar(String str) throws LexicalException {
+        if (str.length() != 3) {
             return false;
+        } else if (str.charAt(0) != 39) {
+            return false;
+        } else if (str.charAt(1) == 39) {
+            return false;
+        } else if (str.charAt(2) != 39) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 
@@ -2850,7 +2879,6 @@ public class Token
             return false;
     }
 
-
     public static boolean isReservedNot(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 3;
@@ -2899,7 +2927,6 @@ public class Token
             return false;
     }
 
-
     public static boolean isReservedOpenParen(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
@@ -2931,7 +2958,6 @@ public class Token
         else
             return false;
     }
-
 
     public static boolean isReservedOr(String candidate) {
         int START_STATE    = 0;
@@ -3006,72 +3032,6 @@ public class Token
             return false;
     }
 
-
-    public static boolean isReservedPrint(String candidate) {
-        int START_STATE    = 0;
-        int TERMINAL_STATE = 5;
-
-        char   next;
-
-        if (candidate.length()!=5){
-            return false;
-        }
-
-        int state = START_STATE;
-        for (int i = 0; i < candidate.length(); i++)
-        {
-            next = candidate.charAt(i);
-            switch (state)
-            {
-                case 0:
-                    switch ( next )
-                    {
-                        case 'p': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 1:
-                    switch ( next )
-                    {
-                        case 'r': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 2:
-                    switch ( next )
-                    {
-                        case 'i': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 3:
-                    switch ( next )
-                    {
-                        case 'n': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 4:
-                    switch ( next )
-                    {
-                        case 't': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-            }
-        }
-
-        if ( state == TERMINAL_STATE )
-            return true;
-        else
-            return false;
-    }
-
-
     public static boolean isReservedThen(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 4;
@@ -3126,86 +3086,6 @@ public class Token
             return true;
         else
             return false;
-    }
-
-
-    public static boolean isReservedTrue(String candidate) {
-        int START_STATE    = 0;
-        int TERMINAL_STATE = 4;
-
-        char   next;
-
-        if (candidate.length()!=4){
-            return false;
-        }
-
-        int state = START_STATE;
-        for (int i = 0; i < candidate.length(); i++)
-        {
-            next = candidate.charAt(i);
-            switch (state)
-            {
-                case 0:
-                    switch ( next )
-                    {
-                        case 't': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 1:
-                    switch ( next )
-                    {
-                        case 'r': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 2:
-                    switch ( next )
-                    {
-                        case 'u': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-                case 3:
-                    switch ( next )
-                    {
-                        case 'e': state++; break;
-                        default : state = -1;
-                    }
-                    break;
-
-            }
-        }
-
-        if ( state == TERMINAL_STATE )
-            return true;
-        else
-            return false;
-    }
-
-    public static boolean isNumber(String num) throws LexicalException
-    {
-        Long lowerBound = -4294967296L;
-        Long upperBound =  4294967295L;
-
-        try {
-
-            Long.valueOf(num).longValue();
-
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-
-        Long temp = Long.valueOf(num).longValue();
-        if( !(lowerBound<=temp) || !(upperBound>=temp) ){
-
-            throw new LexicalException("Number out of range");
-        }
-
-        return true;
     }
 
     public boolean equals(Token otherToken)
