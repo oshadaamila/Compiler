@@ -15,6 +15,9 @@ public class Token
     private String literalValue;
 
     public enum TYPE {
+        NEWLINE,
+        START,
+        VARIABLE,
         PLUS,
         MINUS,
         MULTIPLY,
@@ -29,7 +32,8 @@ public class Token
         NOT,
         OR,
         AND,
-        COMMENT,
+        SINGLELINECOMMENT,
+        MULTILINECOMMENT,
         FORWARD_SLASH,
         COMMA,
         BOOLEAN,
@@ -58,6 +62,8 @@ public class Token
     {
         if (isReservedPlusOp(sToken)) {
             return TYPE.PLUS;
+        }else if(isVariable(sToken)){
+            return TYPE.VARIABLE;
         } else if (isReservedMinusOp(sToken)) {
             return TYPE.MINUS;
         } else if(isReservedMultiplyOp(sToken)) {
@@ -85,7 +91,7 @@ public class Token
         } else if (isReservedAnd(sToken)) {
             return TYPE.AND;
         } else if (isReservedComment(sToken)) {
-            return TYPE.COMMENT;
+            return TYPE.SINGLELINECOMMENT;
         } else if (isReservedForwardSlash(sToken)) {
             return TYPE.FORWARD_SLASH;
         } else if (isReservedComma(sToken)) {
@@ -104,10 +110,185 @@ public class Token
             return TYPE.PRINT;
         } else if (isNumber(sToken)) {
             return TYPE.NUMBER;
-        } else{
+        }else if(isNewLine(sToken)){
+            return TYPE.NEWLINE;
+        }else if(isStart(sToken)){
+               return TYPE.START;
+        }else{
             return TYPE.IDENTIFIER;
         }
     }
+
+    private static boolean isVariable(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 3;
+
+        char   next;
+
+        if (candidate.length()!=3){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case 'v': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case 'a': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch ( next )
+                    {
+                        case 'r': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+
+    }
+
+    private static boolean isStart(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 7;
+
+        char   next;
+
+        if (candidate.length()!=7){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case 'p': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case 'r': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch ( next )
+                    {
+                        case 'o': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 3:
+                    switch ( next )
+                    {
+                        case 'g': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 4:
+                    switch ( next )
+                    {
+                        case 'r': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 5:
+                    switch ( next )
+                    {
+                        case 'a': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 6:
+                    switch ( next )
+                    {
+                        case 'm': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
+    private static boolean isNewLine(String candidate) {
+        int START_STATE    = 0;
+        int TERMINAL_STATE = 2;
+
+        char   next;
+
+        if (candidate.length()!=2){
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++)
+        {
+            next = candidate.charAt(i);
+            switch (state)
+            {
+                case 0:
+                    switch ( next )
+                    {
+                        case '\\': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch ( next )
+                    {
+                        case 'n': state++; break;
+                        default : state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if ( state == TERMINAL_STATE )
+            return true;
+        else
+            return false;
+    }
+
 
     public static boolean isReservedAnd(String candidate) {
 
