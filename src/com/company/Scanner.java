@@ -58,8 +58,15 @@ public class Scanner
 
 
         if( isSymbol( (char) nextByte) ){
-            String stringByte =  Character.toString((char)nextByte);
-            return makeToken(stringByte);
+            char temp = (char)sourceFile.read();
+            if (temp == '='){
+                return makeToken(String.valueOf((char)nextByte)+String.valueOf(temp));
+            }else{
+                String stringByte =  Character.toString((char)nextByte);
+                sourceFile.unread(temp);
+                return makeToken(stringByte);
+            }
+
         }
 
         while( !isSymbol( (char) nextByte) &&

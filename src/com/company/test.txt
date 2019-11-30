@@ -1,5 +1,5 @@
 
-program factors:
+:= program factors:
 
 var
     i : integer; 
