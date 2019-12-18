@@ -81,7 +81,7 @@ public class Scanner
         }
 
         while( !isSymbol( (char) nextByte) &&
-                !isWhitespace( (char) nextByte) ) {
+                !isWhitespace( (char) nextByte) && nextByte != '\n' ) {
             if( tokenLength > MAX_LENGTH ){
                 throw new LexicalException("Identifier is too long. Max identifier length: " + MAX_LENGTH);
             }
@@ -130,7 +130,9 @@ public class Scanner
                 c == '+' ||
                 c == '-' ||
                 c == '*' ||
-                c == '/';
+                c == '/' ||
+                c == '<' ||
+                c == '>';
         // Note: Comment tag is two characters and is perceived as a keyword
     }
 
