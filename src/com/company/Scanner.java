@@ -4,9 +4,9 @@ package com.company;
  * Created by Oshada on 2019-11-30.
  */
 
-import java.io.PushbackInputStream;
-import java.io.IOException;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PushbackInputStream;
 
 public class Scanner
 {
@@ -22,6 +22,32 @@ public class Scanner
         nextToken = null;
     }
 
+    // Static member funtions
+    public static boolean isWhitespace(char c) {
+        return c == ' ' ||
+                c == '\b' ||
+                c == '\f' ||
+                c == '\r' ||
+                c == '\t';
+    }
+
+    public static boolean isSymbol(char c) {
+        return c == '=' ||
+                c == '{' ||
+                c == ':' ||
+                c == ';' ||
+                c == '.' ||
+                c == ',' ||
+                c == '(' ||
+                c == ')' ||
+                c == '+' ||
+                c == '-' ||
+                c == '*' ||
+                c == '/' ||
+                c == '<' ||
+                c == '>';
+        // Note: Comment tag is two characters and is perceived as a keyword
+    }
 
     public Token getNextToken() throws IOException, LexicalException
     {
@@ -67,7 +93,23 @@ public class Scanner
             return new Token(Token.TYPE.MULTILINECOMMENT);
         }
 
-
+        if (nextByte == '"') {
+            String temp = Character.toString('"');
+            char next = (char) sourceFile.read();
+            while (next != '"' && next != -1 && next != 65535) {
+                temp = temp + Character.toString(next);
+                next = (char) sourceFile.read();
+            }
+            if (next == '"') {
+                //a string identified
+                temp = temp + Character.toString('"');
+                return new Token(Token.TYPE.STRING, temp);
+            } else {
+                //not a string
+                throw new LexicalException("Syntax error: String cannot be parsed");
+            }
+        }
+        // checks for symbols and operators
         if( isSymbol( (char) nextByte) ){
             char temp = (char)sourceFile.read();
             if (temp == '='){
@@ -80,10 +122,14 @@ public class Scanner
 
         }
 
+
         while( !isSymbol( (char) nextByte) &&
-                !isWhitespace( (char) nextByte) ) {
+                !isWhitespace((char) nextByte) && nextByte != '\n') {
             if( tokenLength > MAX_LENGTH ){
                 throw new LexicalException("Identifier is too long. Max identifier length: " + MAX_LENGTH);
+            }
+            if (nextByte == '"') {
+                throw new LexicalException("illegal string found");
             }
 
             if( nextByte != -1 || nextByte == '�'){ // EOF character
@@ -105,33 +151,6 @@ public class Scanner
     public int getNextByte() throws IOException
     {
         return sourceFile.read();
-    }
-
-    // Static member funtions
-    public static boolean isWhitespace(char c )
-    {
-        return c == ' '  ||
-                c == '\b' ||
-                c == '\f' ||
-                c == '\r' ||
-                c == '\t';
-    }
-
-    public static boolean isSymbol( char c )
-    {
-        return  c == '=' ||
-                c == '{' ||
-                c == ':' ||
-                c == ';' ||
-                c == '.' ||
-                c == ',' ||
-                c == '(' ||
-                c == ')' ||
-                c == '+' ||
-                c == '-' ||
-                c == '*' ||
-                c == '/';
-        // Note: Comment tag is two characters and is perceived as a keyword
     }
 
 //    public boolean isComment (char c) throws IOException

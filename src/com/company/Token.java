@@ -9,75 +9,10 @@ package com.company;
  * *
   */
 
-import static jdk.nashorn.internal.ir.LiteralNode.isConstant;
-
 public class Token
 {
     private TYPE type;
     private String literalValue;
-
-    public enum TYPE {
-        NEWLINE,
-        START,
-        VARIABLE,
-        CONSTANT,
-        TYPE,
-        FUNCTION,
-        RETURN,
-        BEGIN,
-        END,
-        SWAP,
-        ASSIGNMENT,
-        OUTPUT,IF,
-        THEN,
-        ELSE,
-        WHILE,
-        DO,
-        CASE,
-        OF,
-        DOTS,
-        OTHERWISE,
-        REPEAT,
-        FOR,
-        UNTIL,
-        LOOP,
-        POOL,
-        EXIT,
-        LESSTHANEQUAL,
-        NOTEQUAL,
-        LESSTHAN,
-        GREATERTHANEQUAL,
-        GREATERTHAN,
-        EQUAL,
-        MOD,
-        READ,
-        SUCC,
-        PRED,
-        CHR,
-        ORD,
-        EOF,
-        BEGIN_BLOCK,
-        COLON,
-        SEMICOLON,
-        DOT,
-        COMMA,
-        PLUS,
-        MINUS,
-        MULTIPLY,
-        OPEN_PAREN,
-        CLOSED_PAREN,
-        END_IF,
-        NOT,
-        OR,
-        AND,
-        SINGLELINECOMMENT,
-        MULTILINECOMMENT,
-        FORWARD_SLASH,
-        INTEGER,
-        IDENTIFIER,
-        CHAR,
-        STRING
-    }
 
     public Token(String word) throws LexicalException
     {
@@ -88,6 +23,11 @@ public class Token
     public Token(TYPE tokenType) throws LexicalException
     {
         type = tokenType;
+    }
+
+    public Token(TYPE tokenType, String word) throws LexicalException {
+        type = tokenType;
+        literalValue = word;
     }
 
     public static TYPE assignType(String sToken) throws LexicalException
@@ -205,11 +145,13 @@ public class Token
         }else if(isNewLine(sToken)){
             return TYPE.NEWLINE;
         }else if(isStart(sToken)){
-               return TYPE.START;
+            return TYPE.START;
         }else if(isChar(sToken)){
             return TYPE.CHAR;
-        }else{
+        } else if (isIdentifier(sToken)) {
             return TYPE.IDENTIFIER;
+        } else {
+            throw new LexicalException("cannot parse the token");
         }
     }
 
@@ -275,6 +217,15 @@ public class Token
             return true;
         else
             return false;
+    }
+
+    private static boolean isIdentifier(String string) {
+        Character first_char = string.charAt(0);
+        if ((first_char >= 97 && first_char <= 122) || (first_char >= 65 && first_char <= 90) || first_char == 95) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private static boolean isCHR(String candidate) {
@@ -2272,7 +2223,6 @@ public class Token
             return false;
     }
 
-
     public static boolean isReservedAnd(String candidate) {
 
         int START_STATE    = 0;
@@ -2393,7 +2343,6 @@ public class Token
             return false;
     }
 
-
     public static boolean isReservedColon(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
@@ -2458,7 +2407,6 @@ public class Token
             return false;
     }
 
-
     public static boolean isReservedComma(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
@@ -2490,7 +2438,6 @@ public class Token
         else
             return false;
     }
-
 
     public static boolean isReservedComment(String candidate) {
         int START_STATE    = 0;
@@ -2531,7 +2478,6 @@ public class Token
         else
             return false;
     }
-
 
     public static boolean isReservedElse(String candidate) {
         int START_STATE    = 0;
@@ -2588,7 +2534,6 @@ public class Token
         else
             return false;
     }
-
 
     public static boolean isReservedEndIf(String candidate) {
         int START_STATE    = 0;
@@ -2686,7 +2631,6 @@ public class Token
             return false;
     }
 
-
     public static boolean isReservedIf(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
@@ -2726,7 +2670,6 @@ public class Token
         else
             return false;
     }
-
 
     public static boolean isInteger(String num) throws LexicalException {
         Long lowerBound = -4294967296L;
@@ -2780,7 +2723,6 @@ public class Token
         }
     }
 
-
     public static boolean isReservedLessThanOp(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
@@ -2813,7 +2755,6 @@ public class Token
             return false;
     }
 
-
     public static boolean isReservedMinusOp(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
@@ -2845,7 +2786,6 @@ public class Token
         else
             return false;
     }
-
 
     public static boolean isReservedMultiplyOp(String candidate) {
         int START_STATE    = 0;
@@ -2999,7 +2939,6 @@ public class Token
             return false;
     }
 
-
     public static boolean isReservedPlusOp(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
@@ -3094,7 +3033,73 @@ public class Token
     }
 
     public String getValue(){ return literalValue; }
+
     public TYPE getType(){ return type; }
+
     public int typeToInt(){ return type.ordinal(); }
+
     public String toString(){ return literalValue; }
+
+    public enum TYPE {
+        NEWLINE,
+        START,
+        VARIABLE,
+        CONSTANT,
+        TYPE,
+        FUNCTION,
+        RETURN,
+        BEGIN,
+        END,
+        SWAP,
+        ASSIGNMENT,
+        OUTPUT, IF,
+        THEN,
+        ELSE,
+        WHILE,
+        DO,
+        CASE,
+        OF,
+        DOTS,
+        OTHERWISE,
+        REPEAT,
+        FOR,
+        UNTIL,
+        LOOP,
+        POOL,
+        EXIT,
+        LESSTHANEQUAL,
+        NOTEQUAL,
+        LESSTHAN,
+        GREATERTHANEQUAL,
+        GREATERTHAN,
+        EQUAL,
+        MOD,
+        READ,
+        SUCC,
+        PRED,
+        CHR,
+        ORD,
+        EOF,
+        BEGIN_BLOCK,
+        COLON,
+        SEMICOLON,
+        DOT,
+        COMMA,
+        PLUS,
+        MINUS,
+        MULTIPLY,
+        OPEN_PAREN,
+        CLOSED_PAREN,
+        END_IF,
+        NOT,
+        OR,
+        AND,
+        SINGLELINECOMMENT,
+        MULTILINECOMMENT,
+        FORWARD_SLASH,
+        INTEGER,
+        IDENTIFIER,
+        CHAR,
+        STRING
+    }
 }
