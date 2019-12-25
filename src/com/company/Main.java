@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
         // write your code here
         try {
-            Scanner scanner = new Scanner("/home/oshada/IdeaProjects/Compiler/src/com/company/test.txt");
+            Scanner scanner = new Scanner("D:/Campus/Sem 8/Compiler Design/Project/test.txt");
             int i = 0;
             while (i < 10) {
                 Token a = scanner.getNextToken();
