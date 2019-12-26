@@ -165,5 +165,13 @@ public class Scanner
         nextToken = new Token( rawToken );
         return nextToken;
     }
+
+    public Token getNextValidToken() throws IOException, LexicalException {
+        Token nextValidToken = this.getNextToken();
+        while (nextValidToken.getType() == Token.TYPE.SINGLELINECOMMENT || nextValidToken.getType() == Token.TYPE.MULTILINECOMMENT || nextValidToken.getType() == Token.TYPE.NEWLINE) {
+            nextValidToken = this.getNextToken();
+        }
+        return nextValidToken;
+    }
 }
 

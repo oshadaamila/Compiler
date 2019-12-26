@@ -10,32 +10,26 @@ import java.io.IOException;
 public class Parser {
     protected Scanner scanner;
     String parsedString;
-    Token currentToken;
-    boolean parse;
+    Token nextToken;
     private Token.TYPE type;
 
 
     public Parser(Scanner scanner) throws IOException, LexicalException {
         this.scanner = scanner;
         this.parsedString = "";
-        this.currentToken = scanner.getNextToken();
-        this.parse = false;
+        this.nextToken = scanner.getNextValidToken();
 
     }
 
     public void parseFile() throws IOException, LexicalException, ParseException {
         this.start();
-        if (parse) {
-            System.out.println("parse successs");
-        } else {
-            System.out.printf("parse unsuccess");
-        }
+
 
     }
 
 //    private void start() throws IOException, LexicalException, ParseException {
 //        int n = 1;
-//        type = currentToken.getType();
+//        type = nextToken.getType();
 //        switch (type) {
 //            case BEGIN:
 //                read(Token.TYPE.BEGIN);
@@ -85,19 +79,106 @@ public class Parser {
 //                break;
 //        }
 //    }
-
-
-    private void read(Token.TYPE type) throws IOException, LexicalException, ParseException {
-
-        if (currentToken.getType() == type) {
-            this.parsedString = this.parsedString + currentToken.getValue();
-            currentToken = scanner.getNextToken();
-            this.type = currentToken.getType();
-            parse = true;
-            return;
+private void start() throws LexicalException, ParseException, IOException {
+    if (read(Token.TYPE.START)) {
+        NAME();
+        if (read(Token.TYPE.COLON)) {
+            CONSTS();
+            TYPES();
+            DCLNS();
+            SUBPROGS();
+            NAME();
+            if (!read(Token.TYPE.DOT)) {
+                throw new ParseException("cannot parse");
+            }
         } else {
-            parse = false;
+            throw new ParseException("cannot parse");
+        }
+    } else {
+        throw new ParseException("cannot parse");
+    }
+}
+
+    private void NAME() throws LexicalException, ParseException, IOException {
+        if (!read(Token.TYPE.IDENTIFIER)) {
+            throw new ParseException("cannot parse");
+        }
+    }
+
+    private void CONSTS() throws LexicalException, ParseException, IOException {
+        if (read(Token.TYPE.CONSTANT)) {
+            //here we assumes that each constant is seperated by a comma
+            while (nextToken.getType() != Token.TYPE.SEMICOLON) {
+                CONST();
+                if (!read(Token.TYPE.COMMA)) {
+                    throw new ParseException("cannot parse");
+                }
+            }
+            if (!read(Token.TYPE.SEMICOLON)) {
+                throw new ParseException("cannot parse");
+            }
+        } else {
             return;
         }
     }
+
+    // TODO: 2019-12-26 implement this 3
+    private void TYPES() throws LexicalException, ParseException, IOException {
+        if (read(Token.TYPE.TYPE)) {
+
+        } else {
+            return;
+        }
+    }
+
+    private void DCLNS() throws LexicalException, ParseException, IOException {
+        if (read(Token.TYPE.VARIABLE)) {
+            DCLN();
+            if (!read(Token.TYPE.SEMICOLON)) {
+                throw new ParseException("cannot Parse");
+            }
+            while (nextToken.getType() == Token.TYPE.IDENTIFIER) {
+                DCLN();
+                if (read(Token.TYPE.SEMICOLON)) {
+                    throw new ParseException("cannot Parse");
+                }
+            }
+
+        } else {
+            return;
+        }
+    }
+
+    // TODO: 2019-12-26 implement this 5
+    private void SUBPROGS() {
+    }
+
+    // TODO: 2019-12-26 implement this 6
+    private void CONST() {
+    }
+
+
+    private void DCLN() throws LexicalException, ParseException, IOException {
+        NAME();
+        while (!read(Token.TYPE.COLON)) {
+            NAME();
+            if (!read(Token.TYPE.COMMA)) {
+                throw new ParseException("cannot parse");
+            }
+        }
+        NAME();
+    }
+
+    private boolean read(Token.TYPE type) throws IOException, LexicalException, ParseException {
+
+        if (nextToken.getType() == type) {
+            this.parsedString = this.parsedString + nextToken.getValue();
+            nextToken = scanner.getNextValidToken();
+            this.type = nextToken.getType();
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
+
