@@ -3040,7 +3040,7 @@ public class Token
 
     public String toString(){ return literalValue; }
 
-    public enum TYPE {
+    public static enum TYPE {
         NEWLINE,
         START,
         VARIABLE,

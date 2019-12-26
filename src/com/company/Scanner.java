@@ -51,11 +51,6 @@ public class Scanner
 
     public Token getNextToken() throws IOException, LexicalException
     {
-//        if( nextToken != null ){
-//            Token tmp = nextToken;
-//            nextToken = null;
-//            return tmp;
-//        }
 
         String rawToken = "";
         int nextByte = getNextByte();
@@ -139,7 +134,7 @@ public class Scanner
             }
             else{
                 // Found the End of FIle, return what we were reading and save an EOS Token
-                return makeToken(rawToken);
+                return new Token(Token.TYPE.EOF);
             }
         }
 
