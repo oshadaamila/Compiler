@@ -413,7 +413,14 @@ private void start() throws LexicalException, ParseException, IOException {
         }
     }
 
-    private void CASECLAUSES() {
+    private void CASECLAUSES() throws LexicalException, ParseException, IOException {
+        CASECLAUSE();
+        while (read(Token.TYPE.SEMICOLON)) {
+            CASECLAUSE();
+        }
+    }
+
+    private void CASECLAUSE() {
     }
 
     private void FOREXP() {
@@ -429,8 +436,57 @@ private void start() throws LexicalException, ParseException, IOException {
     private void ASSIGNMENT() {
     }
 
-    private void OUTEXP() {
+    private void OUTEXP() throws ParseException, IOException, LexicalException {
+        switch (nextToken.getType()) {
+            case STRING:
+                STRINGNODE();
+                break;
+            case MINUS:
+                EXPRESSION();
+                break;
+            case PLUS:
+                EXPRESSION();
+                break;
+            case NOT:
+                EXPRESSION();
+                break;
+            case EOF:
+                EXPRESSION();
+                break;
+            case IDENTIFIER:
+                EXPRESSION();
+                break;
+            case INTEGER:
+                EXPRESSION();
+                break;
+            case CHAR:
+                EXPRESSION();
+                break;
+            case OPEN_PAREN:
+                EXPRESSION();
+                break;
+            case SUCC:
+                EXPRESSION();
+                break;
+            case PRED:
+                EXPRESSION();
+                break;
+            case CHR:
+                EXPRESSION();
+                break;
+            case ORD:
+                EXPRESSION();
+                break;
+            default:
+                throw new ParseException("cannot parse");
+        }
 
+    }
+
+    private void STRINGNODE() throws LexicalException, ParseException, IOException {
+        if (!read(Token.TYPE.STRING)) {
+            throw new ParseException("cannot parse");
+        }
     }
 
     private void OTHERWISECLAUSE() {
