@@ -122,10 +122,18 @@ private void start() throws LexicalException, ParseException, IOException {
         }
     }
 
-    // TODO: 2019-12-26 implement this 3
     private void TYPES() throws LexicalException, ParseException, IOException {
         if (read(Token.TYPE.TYPE)) {
-
+            TYPE();
+            if (!read(Token.TYPE.SEMICOLON)) {
+                throw new ParseException("cannot Parse");
+            }
+            while (nextToken.getType() == Token.TYPE.IDENTIFIER) {
+                TYPE();
+                if (read(Token.TYPE.SEMICOLON)) {
+                    throw new ParseException("cannot Parse");
+                }
+            }
         } else {
             return;
         }
@@ -149,12 +157,115 @@ private void start() throws LexicalException, ParseException, IOException {
         }
     }
 
-    // TODO: 2019-12-26 implement this 5
-    private void SUBPROGS() {
+    private void SUBPROGS() throws LexicalException, ParseException, IOException {
+        if (nextToken.getType() != Token.TYPE.FUNCTION) {
+            throw new ParseException("cannot parse");
+        }
+        while (nextToken.getType() == Token.TYPE.FUNCTION) {
+            FCN();
+        }
     }
 
-    // TODO: 2019-12-26 implement this 6
-    private void CONST() {
+    private void CONST() throws LexicalException, ParseException, IOException {
+        NAME();
+        if (!read(Token.TYPE.EQUAL)) {
+            return;
+        }
+        LITLIST();
+    }
+
+    private void LITLIST() throws LexicalException, ParseException, IOException {
+        if (read(Token.TYPE.OPEN_PAREN)) {
+            NAME();
+            while (nextToken.getType() == Token.TYPE.COMMA) {
+                NAME();
+            }
+            if (!read(Token.TYPE.CLOSED_PAREN)) {
+                throw new ParseException("cannot parse");
+            }
+        } else {
+            throw new ParseException("cannot parse");
+        }
+    }
+
+    private void TYPE() throws LexicalException, ParseException, IOException {
+        NAME();
+        if (!read(Token.TYPE.EQUAL)) {
+            throw new ParseException("cannot parse");
+        }
+        LITLIST();
+    }
+
+
+    private void FCN() throws LexicalException, ParseException, IOException {
+        if (read(Token.TYPE.FUNCTION)) {
+            NAME();
+            if (!read(Token.TYPE.OPEN_PAREN)) {
+                throw new ParseException("cannot parse");
+            }
+            PARAMS();
+            if (!read(Token.TYPE.CLOSED_PAREN)) {
+                throw new ParseException("cannot parse");
+            }
+            if (!read(Token.TYPE.COLON)) {
+                throw new ParseException("cannot parse");
+            }
+            NAME();
+            if (!read(Token.TYPE.SEMICOLON)) {
+                throw new ParseException("cannot parse");
+            }
+            CONSTS();
+            TYPES();
+            DCLNS();
+            BODY();
+            NAME();
+            if (!read(Token.TYPE.SEMICOLON)) {
+                throw new ParseException("cannot parse");
+            }
+
+        } else {
+            throw new ParseException("cannot parse");
+
+        }
+    }
+
+    private void PARAMS() throws LexicalException, ParseException, IOException {
+        DCLN();
+        while (read(Token.TYPE.COMMA)) {
+            DCLN();
+        }
+
+    }
+
+    private void CONSTVALUE() throws LexicalException, ParseException, IOException {
+        switch (nextToken.getType()) {
+            case INTEGER:
+                read(Token.TYPE.INTEGER);
+                break;
+            case CHAR:
+                read(Token.TYPE.CHAR);
+                break;
+            case IDENTIFIER:
+                NAME();
+                break;
+            default:
+                throw new ParseException("cannot parse");
+        }
+    }
+
+
+    private void BODY() throws LexicalException, ParseException, IOException {
+        if (read(Token.TYPE.BEGIN)) {
+            STATEMENT();
+            while (nextToken.getType() == Token.TYPE.SEMICOLON) {
+                STATEMENT();
+            }
+            if (!read(Token.TYPE.END)) {
+                throw new ParseException("cannot parse");
+            }
+        } else {
+            throw new ParseException("cannot parse");
+        }
     }
 
 
@@ -163,7 +274,8 @@ private void start() throws LexicalException, ParseException, IOException {
         while (!read(Token.TYPE.COLON)) {
             NAME();
             if (!read(Token.TYPE.COMMA)) {
-                throw new ParseException("cannot parse");
+                //throw new ParseException("cannot parse");
+                return;
             }
         }
         NAME();
@@ -179,6 +291,149 @@ private void start() throws LexicalException, ParseException, IOException {
         } else {
             return false;
         }
+    }
+
+    //TODO implement 12
+    private void STATEMENT() throws LexicalException, ParseException, IOException {
+        switch (nextToken.getType()) {
+            case IDENTIFIER:
+                ASSIGNMENT();
+                break;
+            case OUTPUT:
+                read(Token.TYPE.OUTPUT);
+                if (!read(Token.TYPE.OPEN_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                OUTEXP();
+                while (nextToken.getType() == Token.TYPE.COMMA) {
+                    OUTEXP();
+                }
+                if (!read(Token.TYPE.CLOSED_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                break;
+            case IF:
+                read(Token.TYPE.IF);
+                EXPRESSION();
+                if (!read(Token.TYPE.THEN)) {
+                    throw new ParseException("cannot parse");
+                }
+                STATEMENT();
+                if (read(Token.TYPE.THEN)) {
+                    STATEMENT();
+                }
+                break;
+            case WHILE:
+                read(Token.TYPE.WHILE);
+                EXPRESSION();
+                if (!read(Token.TYPE.DO)) {
+                    throw new ParseException("cannot parse");
+                }
+                STATEMENT();
+                break;
+            case REPEAT:
+                read(Token.TYPE.REPEAT);
+                STATEMENT();
+                while (read(Token.TYPE.SEMICOLON)) {
+                    STATEMENT();
+                }
+                ;
+                if (!read(Token.TYPE.UNTIL)) {
+                    throw new ParseException("cannot parse");
+                }
+                EXPRESSION();
+                break;
+            case FOR:
+                read(Token.TYPE.FOR);
+                if (!read(Token.TYPE.OPEN_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                FORSTAT();
+                if (!read(Token.TYPE.SEMICOLON)) {
+                    throw new ParseException("cannot parse");
+                }
+                FOREXP();
+                if (!read(Token.TYPE.SEMICOLON)) {
+                    throw new ParseException("cannot parse");
+                }
+                FORSTAT();
+                if (!read(Token.TYPE.CLOSED_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                STATEMENT();
+                break;
+            case LOOP:
+                read(Token.TYPE.LOOP);
+                STATEMENT();
+                while (read(Token.TYPE.SEMICOLON)) {
+                    STATEMENT();
+                }
+                if (!read(Token.TYPE.UNTIL)) {
+                    throw new ParseException("cannot parse");
+                }
+                EXPRESSION();
+                break;
+            case CASE:
+                read(Token.TYPE.CASE);
+                EXPRESSION();
+                if (!read(Token.TYPE.OF)) {
+                    throw new ParseException("cannot parse");
+                }
+                CASECLAUSES();
+                OTHERWISECLAUSE();
+                if (!read(Token.TYPE.END)) {
+                    throw new ParseException("cannot parse");
+                }
+                break;
+            case READ:
+                read(Token.TYPE.READ);
+                if (!read(Token.TYPE.SEMICOLON)) {
+                    throw new ParseException("cannot parse");
+                }
+                NAME();
+                while (read(Token.TYPE.COMMA)) {
+                    NAME();
+                }
+                if (!read(Token.TYPE.CLOSED_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                break;
+            case EXIT:
+                read(Token.TYPE.EXIT);
+                break;
+            case RETURN:
+                read(Token.TYPE.RETURN);
+                EXPRESSION();
+                break;
+            case BEGIN:
+                BODY();
+                break;
+            default:
+                return;
+        }
+    }
+
+    private void CASECLAUSES() {
+    }
+
+    private void FOREXP() {
+    }
+
+    private void FORSTAT() {
+    }
+
+    private void EXPRESSION() {
+    }
+
+
+    private void ASSIGNMENT() {
+    }
+
+    private void OUTEXP() {
+
+    }
+
+    private void OTHERWISECLAUSE() {
     }
 }
 
