@@ -132,7 +132,7 @@ private void start() throws LexicalException, ParseException, IOException {
             }
             while (nextToken.getType() == Token.TYPE.IDENTIFIER) {
                 TYPE();
-                if (read(Token.TYPE.SEMICOLON)) {
+                if (!read(Token.TYPE.SEMICOLON)) {
                     throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
             }
@@ -176,10 +176,11 @@ private void start() throws LexicalException, ParseException, IOException {
         LITLIST();
     }
 
+    //corrected
     private void LITLIST() throws LexicalException, ParseException, IOException {
         if (read(Token.TYPE.OPEN_PAREN)) {
             NAME();
-            while (nextToken.getType() == Token.TYPE.COMMA) {
+            while (read(Token.TYPE.COMMA)) {
                 NAME();
             }
             if (!read(Token.TYPE.CLOSED_PAREN)) {
@@ -233,7 +234,7 @@ private void start() throws LexicalException, ParseException, IOException {
 
     private void PARAMS() throws LexicalException, ParseException, IOException {
         DCLN();
-        while (read(Token.TYPE.COMMA)) {
+        while (read(Token.TYPE.SEMICOLON)) {
             DCLN();
         }
 
@@ -271,16 +272,24 @@ private void start() throws LexicalException, ParseException, IOException {
     }
 
 
+    //CORRECTED
     private void DCLN() throws LexicalException, ParseException, IOException {
         NAME();
-        while (!read(Token.TYPE.COLON)) {
+        if (read(Token.TYPE.COLON)) {
             NAME();
-            if (!read(Token.TYPE.COMMA)) {
-                //throw new ParseException("Parse error occured at line "+nextToken.getLineNumber()+" "+nextToken.getValue());
-                return;
+            return;
+        } else if (nextToken.getType() == Token.TYPE.COMMA) {
+            while (read(Token.TYPE.COMMA)) {
+                NAME();
             }
+            if (!read(Token.TYPE.COLON)) {
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
+            }
+            NAME();
+            return;
+        } else {
+            throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
-        NAME();
     }
 
     private boolean read(Token.TYPE type) throws IOException, LexicalException, ParseException {
@@ -307,7 +316,7 @@ private void start() throws LexicalException, ParseException, IOException {
                     throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 OUTEXP();
-                while (nextToken.getType() == Token.TYPE.COMMA) {
+                while (read(Token.TYPE.COMMA)) {
                     OUTEXP();
                 }
                 if (!read(Token.TYPE.CLOSED_PAREN)) {
@@ -701,14 +710,14 @@ private void start() throws LexicalException, ParseException, IOException {
                 read(Token.TYPE.OTHERWISE);
                 STATEMENT();
                 break;
-            case SEMICOLON:
-                read(Token.TYPE.SEMICOLON);
-                break;
+            default:
+                return;
         }
     }
 
     private void CASEEXPRESSION() throws LexicalException, ParseException, IOException {
         CONSTVALUE();
+        //TODO : SCANNER DOESNOT DIFFERENTIATE DOTS
         if (read(Token.TYPE.DOTS)) {
             CONSTVALUE();
         }
