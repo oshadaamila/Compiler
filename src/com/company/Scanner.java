@@ -75,6 +75,7 @@ public class Scanner
             char temp='j';
             while (temp!='\n')
             {
+                line_count = line_count + 1;
                 temp = (char) sourceFile.read();
                 if (temp == 65535)
                     break;
@@ -87,6 +88,9 @@ public class Scanner
             while (temp!='}')
             {
                 temp = (char) sourceFile.read();
+                if (temp == '\n') {
+                    line_count = line_count + 1;
+                }
                 if (temp == 65535)
                     break;
             }
