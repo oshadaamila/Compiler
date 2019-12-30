@@ -23,6 +23,7 @@ public class Parser {
 
     public void parseFile() throws IOException, LexicalException, ParseException {
         this.start();
+        System.out.println("PARSING COMPLETED");
 
 
     }
@@ -87,6 +88,7 @@ private void start() throws LexicalException, ParseException, IOException {
             TYPES();
             DCLNS();
             SUBPROGS();
+            BODY();
             NAME();
             if (!read(Token.TYPE.DOT)) {
                 throw new ParseException("cannot parse");
@@ -147,7 +149,7 @@ private void start() throws LexicalException, ParseException, IOException {
             }
             while (nextToken.getType() == Token.TYPE.IDENTIFIER) {
                 DCLN();
-                if (read(Token.TYPE.SEMICOLON)) {
+                if (!read(Token.TYPE.SEMICOLON)) {
                     throw new ParseException("cannot Parse");
                 }
             }
@@ -257,7 +259,7 @@ private void start() throws LexicalException, ParseException, IOException {
     private void BODY() throws LexicalException, ParseException, IOException {
         if (read(Token.TYPE.BEGIN)) {
             STATEMENT();
-            while (nextToken.getType() == Token.TYPE.SEMICOLON) {
+            while (read(Token.TYPE.SEMICOLON)) {
                 STATEMENT();
             }
             if (!read(Token.TYPE.END)) {
@@ -319,7 +321,7 @@ private void start() throws LexicalException, ParseException, IOException {
                     throw new ParseException("cannot parse");
                 }
                 STATEMENT();
-                if (read(Token.TYPE.THEN)) {
+                if (read(Token.TYPE.ELSE)) {
                     STATEMENT();
                 }
                 break;
@@ -387,7 +389,7 @@ private void start() throws LexicalException, ParseException, IOException {
                 break;
             case READ:
                 read(Token.TYPE.READ);
-                if (!read(Token.TYPE.SEMICOLON)) {
+                if (!read(Token.TYPE.OPEN_PAREN)) {
                     throw new ParseException("cannot parse");
                 }
                 NAME();
@@ -413,10 +415,18 @@ private void start() throws LexicalException, ParseException, IOException {
         }
     }
 
+    //CORRECTED
     private void CASECLAUSES() throws LexicalException, ParseException, IOException {
         CASECLAUSE();
-        while (read(Token.TYPE.SEMICOLON)) {
+        if (!read(Token.TYPE.SEMICOLON)) {
+            throw new ParseException("cannot parse");
+        }
+        while (nextToken.getType() == Token.TYPE.INTEGER || nextToken.getType() == Token.TYPE.CHAR ||
+                nextToken.getType() == Token.TYPE.IDENTIFIER) {
             CASECLAUSE();
+            if (!read(Token.TYPE.SEMICOLON)) {
+                throw new ParseException("cannot parse");
+            }
         }
     }
 
@@ -488,21 +498,27 @@ private void start() throws LexicalException, ParseException, IOException {
         TERM();
         switch (nextToken.getType()) {
             case LESSTHANEQUAL:
+                read(Token.TYPE.LESSTHANEQUAL);
                 TERM();
                 break;
             case LESSTHAN:
+                read(Token.TYPE.LESSTHAN);
                 TERM();
                 break;
             case GREATERTHANEQUAL:
+                read(Token.TYPE.GREATERTHANEQUAL);
                 TERM();
                 break;
             case GREATERTHAN:
+                read(Token.TYPE.GREATERTHAN);
                 TERM();
                 break;
             case EQUAL:
+                read(Token.TYPE.EQUAL);
                 TERM();
                 break;
             case NOTEQUAL:
+                read(Token.TYPE.NOTEQUAL);
                 TERM();
                 break;
         }
@@ -510,16 +526,16 @@ private void start() throws LexicalException, ParseException, IOException {
 
     private void TERM() throws LexicalException, ParseException, IOException {
         FACTOR();
-        while (nextToken.getType() == Token.TYPE.PLUS || nextToken.getType() == Token.TYPE.MINUS ||
-                nextToken.getType() == Token.TYPE.OR) {
+        while (read(Token.TYPE.PLUS) || read(Token.TYPE.MINUS) ||
+                read(Token.TYPE.OR)) {
             FACTOR();
         }
     }
 
     private void FACTOR() throws LexicalException, ParseException, IOException {
         PRIMARY();
-        while (nextToken.getType() == Token.TYPE.MULTIPLY || nextToken.getType() == Token.TYPE.FORWARD_SLASH ||
-                nextToken.getType() == Token.TYPE.AND || nextToken.getType() == Token.TYPE.MOD) {
+        while (read(Token.TYPE.MULTIPLY) || read(Token.TYPE.FORWARD_SLASH) ||
+                read(Token.TYPE.AND) || read(Token.TYPE.MOD)) {
             PRIMARY();
         }
     }

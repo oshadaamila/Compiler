@@ -14,6 +14,7 @@ public class Main {
             Scanner scanner = new Scanner("C://Users/Oshada/IdeaProjects/Compiler/src/com/company/test.txt");
             Parser parser = new Parser(scanner);
             parser.parseFile();
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (LexicalException e) {
