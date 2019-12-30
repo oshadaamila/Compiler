@@ -14,12 +14,14 @@ public class Scanner
 
     private PushbackInputStream sourceFile;
     private Token               nextToken;
+    private int line_count;
 
     public Scanner( String filename ) throws IOException
     {
         sourceFile = new PushbackInputStream(new FileInputStream(filename));
 
         nextToken = null;
+        line_count = 1;
     }
 
     // Static member funtions
@@ -61,10 +63,13 @@ public class Scanner
             nextByte = getNextByte();
         }
         if( nextByte == -1 || nextByte == '�'){
-            return new Token(Token.TYPE.EOF);
+            return new Token(Token.TYPE.EOF, line_count);
         }
         if(nextByte == '\n'){
-            return new Token(Token.TYPE.NEWLINE);
+            line_count = line_count + 1;
+            return new Token(Token.TYPE.NEWLINE, line_count);
+
+
         }
         if(nextByte == '#'  ){
             char temp='j';
@@ -74,7 +79,7 @@ public class Scanner
                 if (temp == 65535)
                     break;
             }
-            return new Token(Token.TYPE.SINGLELINECOMMENT);
+            return new Token(Token.TYPE.SINGLELINECOMMENT, line_count);
         }
 
         if(nextByte == '{'  ){
@@ -85,7 +90,7 @@ public class Scanner
                 if (temp == 65535)
                     break;
             }
-            return new Token(Token.TYPE.MULTILINECOMMENT);
+            return new Token(Token.TYPE.MULTILINECOMMENT, line_count);
         }
 
         if (nextByte == '"') {
@@ -98,7 +103,7 @@ public class Scanner
             if (next == '"') {
                 //a string identified
                 temp = temp + Character.toString('"');
-                return new Token(Token.TYPE.STRING, temp);
+                return new Token(Token.TYPE.STRING, temp, line_count);
             } else {
                 //not a string
                 throw new LexicalException("Syntax error: String cannot be parsed");
@@ -134,7 +139,7 @@ public class Scanner
             }
             else{
                 // Found the End of FIle, return what we were reading and save an EOS Token
-                return new Token(Token.TYPE.EOF);
+                return new Token(Token.TYPE.EOF, line_count);
             }
         }
 
@@ -162,7 +167,7 @@ public class Scanner
 
     private Token makeToken( String rawToken ) throws LexicalException
     {
-        nextToken = new Token( rawToken );
+        nextToken = new Token(rawToken, line_count);
         return nextToken;
     }
 

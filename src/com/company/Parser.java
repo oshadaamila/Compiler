@@ -45,7 +45,7 @@ public class Parser {
 //                read(Token.TYPE.SEMICOLON);
 //                break;
 //            default:
-//                throw new ParseException("Cannot Parse");
+//                throw new ParseException("Parse error occured at line "+nextToken.getLineNumber()+" "+nextToken.getValue());
 //
 //        }
 //
@@ -91,19 +91,19 @@ private void start() throws LexicalException, ParseException, IOException {
             BODY();
             NAME();
             if (!read(Token.TYPE.DOT)) {
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
         } else {
-            throw new ParseException("cannot parse");
+            throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
     } else {
-        throw new ParseException("cannot parse");
+        throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
     }
 }
 
     private void NAME() throws LexicalException, ParseException, IOException {
         if (!read(Token.TYPE.IDENTIFIER)) {
-            throw new ParseException("cannot parse");
+            throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
     }
 
@@ -113,11 +113,11 @@ private void start() throws LexicalException, ParseException, IOException {
             while (nextToken.getType() != Token.TYPE.SEMICOLON) {
                 CONST();
                 if (!read(Token.TYPE.COMMA)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
             }
             if (!read(Token.TYPE.SEMICOLON)) {
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
         } else {
             return;
@@ -128,12 +128,12 @@ private void start() throws LexicalException, ParseException, IOException {
         if (read(Token.TYPE.TYPE)) {
             TYPE();
             if (!read(Token.TYPE.SEMICOLON)) {
-                throw new ParseException("cannot Parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
             while (nextToken.getType() == Token.TYPE.IDENTIFIER) {
                 TYPE();
                 if (read(Token.TYPE.SEMICOLON)) {
-                    throw new ParseException("cannot Parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
             }
         } else {
@@ -145,12 +145,12 @@ private void start() throws LexicalException, ParseException, IOException {
         if (read(Token.TYPE.VARIABLE)) {
             DCLN();
             if (!read(Token.TYPE.SEMICOLON)) {
-                throw new ParseException("cannot Parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
             while (nextToken.getType() == Token.TYPE.IDENTIFIER) {
                 DCLN();
                 if (!read(Token.TYPE.SEMICOLON)) {
-                    throw new ParseException("cannot Parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
             }
 
@@ -161,7 +161,7 @@ private void start() throws LexicalException, ParseException, IOException {
 
     private void SUBPROGS() throws LexicalException, ParseException, IOException {
         if (nextToken.getType() != Token.TYPE.FUNCTION) {
-            throw new ParseException("cannot parse");
+            throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
         while (nextToken.getType() == Token.TYPE.FUNCTION) {
             FCN();
@@ -183,17 +183,17 @@ private void start() throws LexicalException, ParseException, IOException {
                 NAME();
             }
             if (!read(Token.TYPE.CLOSED_PAREN)) {
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
         } else {
-            throw new ParseException("cannot parse");
+            throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
     }
 
     private void TYPE() throws LexicalException, ParseException, IOException {
         NAME();
         if (!read(Token.TYPE.EQUAL)) {
-            throw new ParseException("cannot parse");
+            throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
         LITLIST();
     }
@@ -203,18 +203,18 @@ private void start() throws LexicalException, ParseException, IOException {
         if (read(Token.TYPE.FUNCTION)) {
             NAME();
             if (!read(Token.TYPE.OPEN_PAREN)) {
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
             PARAMS();
             if (!read(Token.TYPE.CLOSED_PAREN)) {
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
             if (!read(Token.TYPE.COLON)) {
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
             NAME();
             if (!read(Token.TYPE.SEMICOLON)) {
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
             CONSTS();
             TYPES();
@@ -222,11 +222,11 @@ private void start() throws LexicalException, ParseException, IOException {
             BODY();
             NAME();
             if (!read(Token.TYPE.SEMICOLON)) {
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
 
         } else {
-            throw new ParseException("cannot parse");
+            throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
 
         }
     }
@@ -251,7 +251,7 @@ private void start() throws LexicalException, ParseException, IOException {
                 NAME();
                 break;
             default:
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
     }
 
@@ -263,10 +263,10 @@ private void start() throws LexicalException, ParseException, IOException {
                 STATEMENT();
             }
             if (!read(Token.TYPE.END)) {
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
         } else {
-            throw new ParseException("cannot parse");
+            throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
     }
 
@@ -276,7 +276,7 @@ private void start() throws LexicalException, ParseException, IOException {
         while (!read(Token.TYPE.COLON)) {
             NAME();
             if (!read(Token.TYPE.COMMA)) {
-                //throw new ParseException("cannot parse");
+                //throw new ParseException("Parse error occured at line "+nextToken.getLineNumber()+" "+nextToken.getValue());
                 return;
             }
         }
@@ -304,21 +304,21 @@ private void start() throws LexicalException, ParseException, IOException {
             case OUTPUT:
                 read(Token.TYPE.OUTPUT);
                 if (!read(Token.TYPE.OPEN_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 OUTEXP();
                 while (nextToken.getType() == Token.TYPE.COMMA) {
                     OUTEXP();
                 }
                 if (!read(Token.TYPE.CLOSED_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 break;
             case IF:
                 read(Token.TYPE.IF);
                 EXPRESSION();
                 if (!read(Token.TYPE.THEN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 STATEMENT();
                 if (read(Token.TYPE.ELSE)) {
@@ -329,7 +329,7 @@ private void start() throws LexicalException, ParseException, IOException {
                 read(Token.TYPE.WHILE);
                 EXPRESSION();
                 if (!read(Token.TYPE.DO)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 STATEMENT();
                 break;
@@ -341,26 +341,26 @@ private void start() throws LexicalException, ParseException, IOException {
                 }
                 ;
                 if (!read(Token.TYPE.UNTIL)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 EXPRESSION();
                 break;
             case FOR:
                 read(Token.TYPE.FOR);
                 if (!read(Token.TYPE.OPEN_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 FORSTAT();
                 if (!read(Token.TYPE.SEMICOLON)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 FOREXP();
                 if (!read(Token.TYPE.SEMICOLON)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 FORSTAT();
                 if (!read(Token.TYPE.CLOSED_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 STATEMENT();
                 break;
@@ -371,7 +371,7 @@ private void start() throws LexicalException, ParseException, IOException {
                     STATEMENT();
                 }
                 if (!read(Token.TYPE.UNTIL)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 EXPRESSION();
                 break;
@@ -379,25 +379,25 @@ private void start() throws LexicalException, ParseException, IOException {
                 read(Token.TYPE.CASE);
                 EXPRESSION();
                 if (!read(Token.TYPE.OF)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 CASECLAUSES();
                 OTHERWISECLAUSE();
                 if (!read(Token.TYPE.END)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 break;
             case READ:
                 read(Token.TYPE.READ);
                 if (!read(Token.TYPE.OPEN_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 NAME();
                 while (read(Token.TYPE.COMMA)) {
                     NAME();
                 }
                 if (!read(Token.TYPE.CLOSED_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 break;
             case EXIT:
@@ -419,13 +419,13 @@ private void start() throws LexicalException, ParseException, IOException {
     private void CASECLAUSES() throws LexicalException, ParseException, IOException {
         CASECLAUSE();
         if (!read(Token.TYPE.SEMICOLON)) {
-            throw new ParseException("cannot parse");
+            throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
         while (nextToken.getType() == Token.TYPE.INTEGER || nextToken.getType() == Token.TYPE.CHAR ||
                 nextToken.getType() == Token.TYPE.IDENTIFIER) {
             CASECLAUSE();
             if (!read(Token.TYPE.SEMICOLON)) {
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
         }
     }
@@ -436,7 +436,7 @@ private void start() throws LexicalException, ParseException, IOException {
             CASEEXPRESSION();
         }
         if (!read(Token.TYPE.COLON)) {
-            throw new ParseException("cannot parse");
+            throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
         STATEMENT();
 
@@ -565,7 +565,7 @@ private void start() throws LexicalException, ParseException, IOException {
                         EXPRESSION();
                     }
                     if (!read(Token.TYPE.CLOSED_PAREN)) {
-                        throw new ParseException("cannot parse");
+                        throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                     }
                 }
                 break;
@@ -579,51 +579,51 @@ private void start() throws LexicalException, ParseException, IOException {
                 read(Token.TYPE.OPEN_PAREN);
                 EXPRESSION();
                 if (!read(Token.TYPE.CLOSED_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 break;
             case SUCC:
                 read(Token.TYPE.SUCC);
                 if (!read(Token.TYPE.OPEN_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 EXPRESSION();
                 if (!read(Token.TYPE.CLOSED_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 break;
             case PRED:
                 read(Token.TYPE.PRED);
                 if (!read(Token.TYPE.OPEN_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 EXPRESSION();
                 if (!read(Token.TYPE.CLOSED_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 break;
             case CHR:
                 read(Token.TYPE.CHR);
                 if (!read(Token.TYPE.OPEN_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 EXPRESSION();
                 if (!read(Token.TYPE.CLOSED_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 break;
             case ORD:
                 read(Token.TYPE.ORD);
                 if (!read(Token.TYPE.OPEN_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 EXPRESSION();
                 if (!read(Token.TYPE.CLOSED_PAREN)) {
-                    throw new ParseException("cannot parse");
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
                 break;
             default:
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
     }
 
@@ -684,14 +684,14 @@ private void start() throws LexicalException, ParseException, IOException {
                 EXPRESSION();
                 break;
             default:
-                throw new ParseException("cannot parse");
+                throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
 
     }
 
     private void STRINGNODE() throws LexicalException, ParseException, IOException {
         if (!read(Token.TYPE.STRING)) {
-            throw new ParseException("cannot parse");
+            throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
     }
 
@@ -713,4 +713,6 @@ private void start() throws LexicalException, ParseException, IOException {
             CONSTVALUE();
         }
     }
+
+
 }

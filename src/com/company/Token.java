@@ -13,21 +13,25 @@ public class Token
 {
     private TYPE type;
     private String literalValue;
+    private int line_number;
 
-    public Token(String word) throws LexicalException
+    public Token(String word, int line_number) throws LexicalException
     {
         type = assignType(word);
         literalValue = word;
+        this.line_number = line_number;
     }
 
-    public Token(TYPE tokenType) throws LexicalException
+    public Token(TYPE tokenType, int line_no) throws LexicalException
     {
         type = tokenType;
+        this.line_number = line_no;
     }
 
-    public Token(TYPE tokenType, String word) throws LexicalException {
+    public Token(TYPE tokenType, String word, int line_no) throws LexicalException {
         type = tokenType;
         literalValue = word;
+        this.line_number = line_no;
     }
 
     public static TYPE assignType(String sToken) throws LexicalException
@@ -3032,13 +3036,27 @@ public class Token
         return type == otherToken.getType();
     }
 
-    public String getValue(){ return literalValue; }
+    public String getValue() {
+        if (literalValue == null) {
+            return "value not assigned";
+        } else {
+            return literalValue;
+        }
+    }
 
     public TYPE getType(){ return type; }
 
     public int typeToInt(){ return type.ordinal(); }
 
     public String toString(){ return literalValue; }
+
+    public String getLineNumber() {
+
+        return Integer.toString(line_number);
+    }
+
+
+
 
     public static enum TYPE {
         NEWLINE,
