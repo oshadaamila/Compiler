@@ -420,20 +420,210 @@ private void start() throws LexicalException, ParseException, IOException {
         }
     }
 
-    private void CASECLAUSE() {
+    private void CASECLAUSE() throws LexicalException, ParseException, IOException {
+        CASEEXPRESSION();
+        while (read(Token.TYPE.COMMA)) {
+            CASEEXPRESSION();
+        }
+        if (!read(Token.TYPE.COLON)) {
+            throw new ParseException("cannot parse");
+        }
+        STATEMENT();
+
     }
 
-    private void FOREXP() {
+    private void FOREXP() throws LexicalException, ParseException, IOException {
+        switch (nextToken.getType()) {
+            case MINUS:
+                EXPRESSION();
+                break;
+            case PLUS:
+                EXPRESSION();
+                break;
+            case NOT:
+                EXPRESSION();
+                break;
+            case EOF:
+                EXPRESSION();
+                break;
+            case IDENTIFIER:
+                EXPRESSION();
+                break;
+            case INTEGER:
+                EXPRESSION();
+                break;
+            case CHAR:
+                EXPRESSION();
+                break;
+            case OPEN_PAREN:
+                EXPRESSION();
+                break;
+            case SUCC:
+                EXPRESSION();
+                break;
+            case PRED:
+                EXPRESSION();
+                break;
+            case CHR:
+                EXPRESSION();
+                break;
+            case ORD:
+                EXPRESSION();
+                break;
+            default:
+                return;
+        }
+
     }
 
-    private void FORSTAT() {
+    private void FORSTAT() throws LexicalException, ParseException, IOException {
+        if (nextToken.getType() == Token.TYPE.IDENTIFIER) {
+            ASSIGNMENT();
+        } else {
+            return;
+        }
     }
 
-    private void EXPRESSION() {
+    private void EXPRESSION() throws LexicalException, ParseException, IOException {
+        TERM();
+        switch (nextToken.getType()) {
+            case LESSTHANEQUAL:
+                TERM();
+                break;
+            case LESSTHAN:
+                TERM();
+                break;
+            case GREATERTHANEQUAL:
+                TERM();
+                break;
+            case GREATERTHAN:
+                TERM();
+                break;
+            case EQUAL:
+                TERM();
+                break;
+            case NOTEQUAL:
+                TERM();
+                break;
+        }
+    }
+
+    private void TERM() throws LexicalException, ParseException, IOException {
+        FACTOR();
+        while (nextToken.getType() == Token.TYPE.PLUS || nextToken.getType() == Token.TYPE.MINUS ||
+                nextToken.getType() == Token.TYPE.OR) {
+            FACTOR();
+        }
+    }
+
+    private void FACTOR() throws LexicalException, ParseException, IOException {
+        PRIMARY();
+        while (nextToken.getType() == Token.TYPE.MULTIPLY || nextToken.getType() == Token.TYPE.FORWARD_SLASH ||
+                nextToken.getType() == Token.TYPE.AND || nextToken.getType() == Token.TYPE.MOD) {
+            PRIMARY();
+        }
+    }
+
+    private void PRIMARY() throws LexicalException, ParseException, IOException {
+        switch (nextToken.getType()) {
+            case MINUS:
+                read(Token.TYPE.MINUS);
+                PRIMARY();
+                break;
+            case PLUS:
+                read(Token.TYPE.PLUS);
+                PRIMARY();
+                break;
+            case NOT:
+                read(Token.TYPE.NOT);
+                PRIMARY();
+                break;
+            case EOF:
+                read(Token.TYPE.EOF);
+                break;
+            case IDENTIFIER:
+                NAME();
+                if (read(Token.TYPE.OPEN_PAREN)) {
+                    EXPRESSION();
+                    while (read(Token.TYPE.COMMA)) {
+                        EXPRESSION();
+                    }
+                    if (!read(Token.TYPE.CLOSED_PAREN)) {
+                        throw new ParseException("cannot parse");
+                    }
+                }
+                break;
+            case INTEGER:
+                read(Token.TYPE.INTEGER);
+                break;
+            case CHAR:
+                read(Token.TYPE.CHAR);
+                break;
+            case OPEN_PAREN:
+                read(Token.TYPE.OPEN_PAREN);
+                EXPRESSION();
+                if (!read(Token.TYPE.CLOSED_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                break;
+            case SUCC:
+                read(Token.TYPE.SUCC);
+                if (!read(Token.TYPE.OPEN_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                EXPRESSION();
+                if (!read(Token.TYPE.CLOSED_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                break;
+            case PRED:
+                read(Token.TYPE.PRED);
+                if (!read(Token.TYPE.OPEN_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                EXPRESSION();
+                if (!read(Token.TYPE.CLOSED_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                break;
+            case CHR:
+                read(Token.TYPE.CHR);
+                if (!read(Token.TYPE.OPEN_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                EXPRESSION();
+                if (!read(Token.TYPE.CLOSED_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                break;
+            case ORD:
+                read(Token.TYPE.ORD);
+                if (!read(Token.TYPE.OPEN_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                EXPRESSION();
+                if (!read(Token.TYPE.CLOSED_PAREN)) {
+                    throw new ParseException("cannot parse");
+                }
+                break;
+            default:
+                throw new ParseException("cannot parse");
+        }
     }
 
 
-    private void ASSIGNMENT() {
+    private void ASSIGNMENT() throws LexicalException, ParseException, IOException {
+        NAME();
+        switch (nextToken.getType()) {
+            case ASSIGNMENT:
+                read(Token.TYPE.ASSIGNMENT);
+                EXPRESSION();
+                break;
+            case SWAP:
+                read(Token.TYPE.SWAP);
+                NAME();
+                break;
+        }
     }
 
     private void OUTEXP() throws ParseException, IOException, LexicalException {
@@ -489,7 +679,22 @@ private void start() throws LexicalException, ParseException, IOException {
         }
     }
 
-    private void OTHERWISECLAUSE() {
+    private void OTHERWISECLAUSE() throws LexicalException, ParseException, IOException {
+        switch (nextToken.getType()) {
+            case OTHERWISE:
+                read(Token.TYPE.OTHERWISE);
+                STATEMENT();
+                break;
+            case SEMICOLON:
+                read(Token.TYPE.SEMICOLON);
+                break;
+        }
+    }
+
+    private void CASEEXPRESSION() throws LexicalException, ParseException, IOException {
+        CONSTVALUE();
+        if (read(Token.TYPE.DOTS)) {
+            CONSTVALUE();
+        }
     }
 }
-
