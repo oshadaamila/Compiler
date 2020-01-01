@@ -20,21 +20,26 @@ public class Token
         type = assignType(word);
         literalValue = word;
         this.line_number = line_number;
+        System.out.println("line no" + getLineNumber());
     }
 
     public Token(TYPE tokenType, int line_no) throws LexicalException
     {
         type = tokenType;
         this.line_number = line_no;
+        System.out.println("line no" + getLineNumber());
+
     }
 
     public Token(TYPE tokenType, String word, int line_no) throws LexicalException {
         type = tokenType;
         literalValue = word;
         this.line_number = line_no;
+        System.out.println("line no" + getLineNumber());
+
     }
 
-    public static TYPE assignType(String sToken) throws LexicalException
+    public TYPE assignType(String sToken) throws LexicalException
     {
         if (isReservedPlusOp(sToken)) {
             return TYPE.PLUS;
@@ -155,11 +160,11 @@ public class Token
         } else if (isIdentifier(sToken)) {
             return TYPE.IDENTIFIER;
         } else {
-            throw new LexicalException("cannot parse the token");
+            throw new LexicalException("invalid literal at line" + getLineNumber() + " " + literalValue);
         }
     }
 
-    private static boolean isDot(String candidate) {
+    private boolean isDot(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -191,7 +196,7 @@ public class Token
             return false;
     }
 
-    private static boolean isBeginBlock(String candidate) {
+    private boolean isBeginBlock(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -223,7 +228,7 @@ public class Token
             return false;
     }
 
-    private static boolean isIdentifier(String string) {
+    private boolean isIdentifier(String string) {
         Character first_char = string.charAt(0);
         if ((first_char >= 97 && first_char <= 122) || (first_char >= 65 && first_char <= 90) || first_char == 95) {
             return true;
@@ -232,7 +237,7 @@ public class Token
         }
     }
 
-    private static boolean isCHR(String candidate) {
+    private boolean isCHR(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 3;
 
@@ -285,7 +290,7 @@ public class Token
             return false;
     }
 
-    private static boolean isORD(String candidate) {
+    private boolean isORD(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 3;
 
@@ -338,7 +343,7 @@ public class Token
             return false;
     }
 
-    private static boolean isPred(String candidate) {
+    private boolean isPred(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 4;
 
@@ -399,7 +404,7 @@ public class Token
             return false;
     }
 
-    private static boolean isSucc(String candidate) {
+    private boolean isSucc(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 4;
 
@@ -460,7 +465,7 @@ public class Token
             return false;
     }
 
-    private static boolean isRead(String candidate) {
+    private boolean isRead(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 4;
 
@@ -521,7 +526,7 @@ public class Token
             return false;
     }
 
-    private static boolean isMod(String candidate) {
+    private boolean isMod(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 3;
 
@@ -574,7 +579,7 @@ public class Token
             return false;
     }
 
-    private static boolean isEqualToken(String candidate) {
+    private boolean isEqualToken(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -609,7 +614,7 @@ public class Token
 
     }
 
-    private static boolean isGreaterThan(String candidate) {
+    private boolean isGreaterThan(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -643,7 +648,7 @@ public class Token
             return false;
     }
 
-    private static boolean isGreaterThanEqual(String candidate) {
+    private boolean isGreaterThanEqual(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
 
@@ -683,7 +688,7 @@ public class Token
             return false;
     }
 
-    private static boolean isNotEqual(String candidate) {
+    private boolean isNotEqual(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
 
@@ -723,7 +728,7 @@ public class Token
             return false;
     }
 
-    private static boolean isLessThanEqual(String candidate) {
+    private boolean isLessThanEqual(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
 
@@ -763,7 +768,7 @@ public class Token
             return false;
     }
 
-    private static boolean isExit(String candidate) {
+    private boolean isExit(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 4;
 
@@ -824,7 +829,7 @@ public class Token
             return false;
     }
 
-    private static boolean isPool(String candidate) {
+    private boolean isPool(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 4;
 
@@ -885,7 +890,7 @@ public class Token
             return false;
     }
 
-    private static boolean isLoops(String candidate) {
+    private boolean isLoops(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 4;
 
@@ -946,7 +951,7 @@ public class Token
             return false;
     }
 
-    private static boolean isUntil(String candidate) {
+    private boolean isUntil(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 5;
 
@@ -1016,7 +1021,7 @@ public class Token
             return false;
     }
 
-    private static boolean isFor(String candidate) {
+    private boolean isFor(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 3;
 
@@ -1069,7 +1074,7 @@ public class Token
             return false;
     }
 
-    private static boolean isRepeat(String candidate) {
+    private boolean isRepeat(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 6;
 
@@ -1142,13 +1147,13 @@ public class Token
             return false;
     }
 
-    private static boolean isOtherwise(String candidate) {
+    private boolean isOtherwise(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 9;
 
         char   next;
 
-        if (candidate.length()!=8){
+        if (candidate.length() != 9) {
             return false;
         }
 
@@ -1237,7 +1242,7 @@ public class Token
             return false;
     }
 
-    private static boolean isDots(String candidate) {
+    private boolean isDots(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
 
@@ -1277,7 +1282,7 @@ public class Token
             return false;
     }
 
-    private static boolean isOf(String candidate) {
+    private boolean isOf(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
 
@@ -1317,7 +1322,7 @@ public class Token
             return false;
     }
 
-    private static boolean isCase(String candidate) {
+    private boolean isCase(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 4;
 
@@ -1378,7 +1383,7 @@ public class Token
             return false;
     }
 
-    private static boolean isDo(String candidate) {
+    private boolean isDo(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
 
@@ -1418,7 +1423,7 @@ public class Token
             return false;
     }
 
-    private static boolean isWhile(String candidate) {
+    private boolean isWhile(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 5;
 
@@ -1489,7 +1494,7 @@ public class Token
 
     }
 
-    private static boolean isOutput(String candidate) {
+    private boolean isOutput(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 6;
 
@@ -1563,7 +1568,7 @@ public class Token
 
     }
 
-    private static boolean isSwap(String candidate) {
+    private boolean isSwap(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 3;
 
@@ -1615,7 +1620,7 @@ public class Token
             return false;
     }
 
-    private static boolean isEnd(String candidate) {
+    private boolean isEnd(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 3;
 
@@ -1669,7 +1674,7 @@ public class Token
 
     }
 
-    private static boolean isBegin(String candidate) {
+    private boolean isBegin(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 5;
 
@@ -1740,7 +1745,7 @@ public class Token
 
     }
 
-    private static boolean isReturn(String candidate) {
+    private boolean isReturn(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 6;
 
@@ -1819,7 +1824,7 @@ public class Token
             return false;
     }
 
-    private static boolean isFunction(String candidate) {
+    private boolean isFunction(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 8;
 
@@ -1908,7 +1913,7 @@ public class Token
 
     }
 
-    private static boolean isType(String candidate) {
+    private boolean isType(String candidate) {
         int START_STATE = 0;
         int TERMINAL_STATE = 4;
 
@@ -1969,7 +1974,7 @@ public class Token
             return false;
     }
 
-    private static boolean isConst(String candidate) {
+    private boolean isConst(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 8;
 
@@ -2057,7 +2062,7 @@ public class Token
             return false;
     }
 
-    private static boolean isVariable(String candidate) {
+    private boolean isVariable(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 3;
 
@@ -2106,7 +2111,7 @@ public class Token
 
     }
 
-    private static boolean isStart(String candidate) {
+    private boolean isStart(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 7;
 
@@ -2187,7 +2192,7 @@ public class Token
             return false;
     }
 
-    private static boolean isNewLine(String candidate) {
+    private boolean isNewLine(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
 
@@ -2227,7 +2232,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedAnd(String candidate) {
+    public boolean isReservedAnd(String candidate) {
 
         int START_STATE    = 0;
         int TERMINAL_STATE = 3;
@@ -2276,7 +2281,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedAssignmentOp(String candidate) {
+    public boolean isReservedAssignmentOp(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
 
@@ -2315,7 +2320,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedClosedParen(String candidate) {
+    public boolean isReservedClosedParen(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -2347,7 +2352,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedColon(String candidate) {
+    public boolean isReservedColon(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -2379,7 +2384,7 @@ public class Token
             return false;
     }
 
-    public static boolean isSemiColon(String candidate) {
+    public boolean isSemiColon(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -2411,7 +2416,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedComma(String candidate) {
+    public boolean isReservedComma(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -2443,7 +2448,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedComment(String candidate) {
+    public boolean isReservedComment(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
 
@@ -2483,7 +2488,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedElse(String candidate) {
+    public boolean isReservedElse(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 4;
 
@@ -2539,7 +2544,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedEndIf(String candidate) {
+    public boolean isReservedEndIf(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 5;
 
@@ -2603,7 +2608,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedForwardSlash(String candidate) {
+    public boolean isReservedForwardSlash(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -2635,7 +2640,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedIf(String candidate) {
+    public boolean isReservedIf(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
 
@@ -2675,7 +2680,7 @@ public class Token
             return false;
     }
 
-    public static boolean isInteger(String num) throws LexicalException {
+    public boolean isInteger(String num) throws LexicalException {
         Long lowerBound = -4294967296L;
         Long upperBound =  4294967295L;
 
@@ -2690,13 +2695,14 @@ public class Token
         Long temp = Long.valueOf(num).longValue();
         if( !(lowerBound<=temp) || !(upperBound>=temp) ){
 
-            throw new LexicalException("Number out of range");
+            throw new LexicalException("invalid literal at line " + getLineNumber() + " " + literalValue);
+
         }
 
         return true;
     }
 
-    public static boolean isString(String str) throws LexicalException{
+    public boolean isString(String str) throws LexicalException {
         int length = str.length();
         if (str.charAt(0) != '"'){
             return false;
@@ -2713,7 +2719,7 @@ public class Token
         return true;
     }
 
-    public static boolean isChar(String str) throws LexicalException {
+    public boolean isChar(String str) throws LexicalException {
         if (str.length() != 3) {
             return false;
         } else if (str.charAt(0) != 39) {
@@ -2727,7 +2733,7 @@ public class Token
         }
     }
 
-    public static boolean isReservedLessThanOp(String candidate) {
+    public boolean isReservedLessThanOp(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -2759,7 +2765,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedMinusOp(String candidate) {
+    public boolean isReservedMinusOp(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -2791,7 +2797,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedMultiplyOp(String candidate) {
+    public boolean isReservedMultiplyOp(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -2823,7 +2829,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedNot(String candidate) {
+    public boolean isReservedNot(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 3;
 
@@ -2871,7 +2877,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedOpenParen(String candidate) {
+    public boolean isReservedOpenParen(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -2903,7 +2909,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedOr(String candidate) {
+    public boolean isReservedOr(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 2;
 
@@ -2943,7 +2949,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedPlusOp(String candidate) {
+    public boolean isReservedPlusOp(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 1;
 
@@ -2975,7 +2981,7 @@ public class Token
             return false;
     }
 
-    public static boolean isReservedThen(String candidate) {
+    public boolean isReservedThen(String candidate) {
         int START_STATE    = 0;
         int TERMINAL_STATE = 4;
 
@@ -3044,7 +3050,9 @@ public class Token
         }
     }
 
-    public TYPE getType(){ return type; }
+    public TYPE getType() {
+        return type;
+    }
 
     public int typeToInt(){ return type.ordinal(); }
 
@@ -3056,9 +3064,7 @@ public class Token
     }
 
 
-
-
-    public static enum TYPE {
+    public enum TYPE {
         NEWLINE,
         START,
         VARIABLE,

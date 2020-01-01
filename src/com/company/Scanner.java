@@ -75,11 +75,12 @@ public class Scanner
             char temp='j';
             while (temp!='\n')
             {
-                line_count = line_count + 1;
+
                 temp = (char) sourceFile.read();
                 if (temp == 65535)
                     break;
             }
+            line_count = line_count + 1;
             return new Token(Token.TYPE.SINGLELINECOMMENT, line_count);
         }
 
@@ -118,6 +119,8 @@ public class Scanner
             char temp = (char)sourceFile.read();
             if (temp == '='){
                 return makeToken(String.valueOf((char)nextByte)+String.valueOf(temp));
+            } else if (nextByte == '.' && temp == '.') {
+                return makeToken(String.valueOf((char) nextByte) + String.valueOf(temp));
             }else{
                 String stringByte =  Character.toString((char)nextByte);
                 sourceFile.unread(temp);
