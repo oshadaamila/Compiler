@@ -98,6 +98,7 @@ public class Scanner
             return new Token(Token.TYPE.MULTILINECOMMENT, line_count);
         }
 
+
         if (nextByte == '"') {
             String temp = Character.toString('"');
             char next = (char) sourceFile.read();
@@ -127,6 +128,16 @@ public class Scanner
                 return makeToken(stringByte);
             }
 
+        }
+        if (nextByte == 39) {
+            char temp1 = (char) sourceFile.read();
+            char temp2 = (char) sourceFile.read();
+            if (temp2 == 39) {
+                return makeToken(String.valueOf((char) nextByte) + String.valueOf(temp1) + String.valueOf(temp2));
+            } else {
+                sourceFile.unread(temp2);
+                sourceFile.unread(temp1);
+            }
         }
 
 
