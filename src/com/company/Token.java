@@ -20,14 +20,14 @@ public class Token
         type = assignType(word);
         literalValue = word;
         this.line_number = line_number;
-        System.out.println("line no" + getLineNumber());
+        //System.out.println("line no" + getLineNumber());
     }
 
     public Token(TYPE tokenType, int line_no) throws LexicalException
     {
         type = tokenType;
         this.line_number = line_no;
-        System.out.println("line no" + getLineNumber());
+        //System.out.println("line no" + getLineNumber());
 
     }
 
@@ -35,7 +35,7 @@ public class Token
         type = tokenType;
         literalValue = word;
         this.line_number = line_no;
-        System.out.println("line no" + getLineNumber());
+        //System.out.println("line no" + getLineNumber());
 
     }
 
