@@ -1,7 +1,7 @@
 package com.company;
 
 import java.io.IOException;
-
+import java.util.Stack;
 
 
 /**
@@ -11,9 +11,9 @@ public class Parser {
     protected Scanner scanner;
     String parsedString;
     Token nextToken;
+    Stack<Node> stack;
     private Token.TYPE type;
     private int testInt = 1;
-
 
     public Parser(Scanner scanner) throws IOException, LexicalException {
         this.scanner = scanner;
