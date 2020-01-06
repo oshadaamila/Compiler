@@ -8,7 +8,7 @@ public class Node {
     Node right;
     Node left;
 
-    public Node(String val, Node right, Node left) {
+    public Node(String val, Node left, Node right) {
         this.val = val;
         this.right = right;
         this.left = left;

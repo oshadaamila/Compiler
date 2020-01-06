@@ -19,6 +19,7 @@ public class Parser {
         this.scanner = scanner;
         this.parsedString = "";
         this.nextToken = scanner.getNextValidToken();
+        stack = new Stack<>();
 
     }
 
@@ -52,9 +53,13 @@ public class Parser {
 }
 
     private void NAME() throws LexicalException, ParseException, IOException {
+        String val = nextToken.getValue();
         if (!read(Token.TYPE.IDENTIFIER)) {
             throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
+        buildTree(val, 0);
+        buildTree("<identifier>", 1);
+
     }
 
     //TODO for single case of consrs
@@ -201,7 +206,7 @@ public class Parser {
     }
 
     private void PARAMS() throws LexicalException, ParseException, IOException {
-        int childCount = 0;
+        int childCount = 1;
         DCLN();
         while (read(Token.TYPE.SEMICOLON)) {
             DCLN();
@@ -415,7 +420,7 @@ public class Parser {
                 BODY();
                 break;
             default:
-                buildTree(" ", 0);
+                buildTree("<null>", 0);
                 return;
         }
     }
@@ -494,7 +499,7 @@ public class Parser {
     private void FORSTAT() throws LexicalException, ParseException, IOException {
         if (nextToken.getType() == Token.TYPE.IDENTIFIER) {
             ASSIGNMENT();
-            buildTree(" ", 0);
+            buildTree("<null>", 0);
         } else {
             return;
         }
@@ -616,13 +621,17 @@ public class Parser {
                     if (!read(Token.TYPE.CLOSED_PAREN)) {
                         throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                     }
+                    buildTree("call", childCount);
                 }
-                buildTree("call", childCount);
                 break;
             case INTEGER:
+                buildTree(nextToken.getValue(), 0);
+                buildTree("<integer>", 1);
                 read(Token.TYPE.INTEGER);
                 break;
             case CHAR:
+                buildTree(nextToken.getValue(), 0);
+                buildTree("<char>", 1);
                 read(Token.TYPE.CHAR);
                 break;
             case OPEN_PAREN:
@@ -794,7 +803,14 @@ public class Parser {
     }
 
     private void buildTree(String functionName, int num_of_children) {
-        System.out.println(functionName + " exectuted " + Integer.toString(num_of_children) + " sequence: " + Integer.toString(testInt));
+        System.out.println(functionName + "(" + Integer.toString(num_of_children) + ")");
         testInt = testInt + 1;
+        Node p = null;
+        for (int i = 1; i <= num_of_children; i = i + 1) {
+            Node c = stack.pop();
+            c.right = p;
+            p = c;
+        }
+        stack.push(new Node(functionName, p, null));
     }
 }
