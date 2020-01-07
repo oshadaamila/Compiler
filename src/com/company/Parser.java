@@ -25,7 +25,7 @@ public class Parser {
 
     public void parseFile() throws IOException, LexicalException, ParseException {
         this.start();
-        traverseTree(stack.pop());
+        traverseTree(stack.pop(), 0);
         System.out.println("PARSING COMPLETED");
 
 
@@ -818,17 +818,20 @@ public class Parser {
             c.right = p;
             p = c;
         }
-        stack.push(new Node(functionName + "(" + Integer.toString(num_of_children), p, null));
+        stack.push(new Node(functionName + "(" + Integer.toString(num_of_children) + ")", p, null));
     }
 
-    private void traverseTree(Node root) {
+    private void traverseTree(Node root, int dotCount) {
 
         if (root == null) {
             return;
         } else {
+            for (int i = 0; i < dotCount; i++) {
+                System.out.print(".");
+            }
             System.out.println(root.getVal());
-            traverseTree(root.getLeft());
-            traverseTree(root.getRight());
+            traverseTree(root.getLeft(), dotCount + 1);
+            traverseTree(root.getRight(), dotCount);
 
         }
     }
