@@ -25,6 +25,7 @@ public class Parser {
 
     public void parseFile() throws IOException, LexicalException, ParseException {
         this.start();
+        traverseTree(stack.pop());
         System.out.println("PARSING COMPLETED");
 
 
@@ -113,6 +114,7 @@ public class Parser {
                 throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
             while (nextToken.getType() == Token.TYPE.IDENTIFIER) {
+                childCount = childCount + 1;
                 DCLN();
                 if (!read(Token.TYPE.SEMICOLON)) {
                     throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
@@ -237,6 +239,7 @@ public class Parser {
         if (read(Token.TYPE.BEGIN)) {
             STATEMENT();
             while (read(Token.TYPE.SEMICOLON)) {
+                childCount = childCount + 1;
                 STATEMENT();
             }
             if (!read(Token.TYPE.END)) {
@@ -440,15 +443,18 @@ public class Parser {
     }
 
     private void CASECLAUSE() throws LexicalException, ParseException, IOException {
+        int childCount = 1;
         CASEEXPRESSION();
         while (read(Token.TYPE.COMMA)) {
+            childCount = childCount + 1;
             CASEEXPRESSION();
         }
         if (!read(Token.TYPE.COLON)) {
             throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
         STATEMENT();
-
+        childCount = childCount + 1;
+        buildTree("case_clause", childCount);
     }
 
     private void FOREXP() throws LexicalException, ParseException, IOException {
@@ -499,8 +505,9 @@ public class Parser {
     private void FORSTAT() throws LexicalException, ParseException, IOException {
         if (nextToken.getType() == Token.TYPE.IDENTIFIER) {
             ASSIGNMENT();
-            buildTree("<null>", 0);
+
         } else {
+            buildTree("<null>", 0);
             return;
         }
     }
@@ -803,14 +810,26 @@ public class Parser {
     }
 
     private void buildTree(String functionName, int num_of_children) {
-        System.out.println(functionName + "(" + Integer.toString(num_of_children) + ")");
-        testInt = testInt + 1;
+        //System.out.println(functionName + "(" + Integer.toString(num_of_children) + ")");
+        //testInt = testInt + 1;
         Node p = null;
         for (int i = 1; i <= num_of_children; i = i + 1) {
             Node c = stack.pop();
             c.right = p;
             p = c;
         }
-        stack.push(new Node(functionName, p, null));
+        stack.push(new Node(functionName + "(" + Integer.toString(num_of_children), p, null));
+    }
+
+    private void traverseTree(Node root) {
+
+        if (root == null) {
+            return;
+        } else {
+            System.out.println(root.getVal());
+            traverseTree(root.getLeft());
+            traverseTree(root.getRight());
+
+        }
     }
 }
