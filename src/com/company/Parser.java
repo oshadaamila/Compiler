@@ -221,9 +221,13 @@ public class Parser {
     private void CONSTVALUE() throws LexicalException, ParseException, IOException {
         switch (nextToken.getType()) {
             case INTEGER:
+                buildTree(nextToken.getValue(), 0);
+                buildTree("<integer>", 1);
                 read(Token.TYPE.INTEGER);
                 break;
             case CHAR:
+                buildTree(nextToken.getValue(), 0);
+                buildTree("<char>", 1);
                 read(Token.TYPE.CHAR);
                 break;
             case IDENTIFIER:
@@ -623,6 +627,7 @@ public class Parser {
                     childCount = childCount + 1;
                     EXPRESSION();
                     while (read(Token.TYPE.COMMA)) {
+                        childCount = childCount + 1;
                         EXPRESSION();
                     }
                     if (!read(Token.TYPE.CLOSED_PAREN)) {
@@ -827,7 +832,7 @@ public class Parser {
             return;
         } else {
             for (int i = 0; i < dotCount; i++) {
-                System.out.print(".");
+                System.out.print(". ");
             }
             System.out.println(root.getVal());
             traverseTree(root.getLeft(), dotCount + 1);

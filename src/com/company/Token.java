@@ -157,11 +157,65 @@ public class Token
             return TYPE.START;
         }else if(isChar(sToken)){
             return TYPE.CHAR;
+        } else if (ifEof(sToken)) {
+            return TYPE.EOF;
         } else if (isIdentifier(sToken)) {
             return TYPE.IDENTIFIER;
         } else {
             throw new LexicalException("invalid literal at line" + getLineNumber() + " " + literalValue);
         }
+    }
+
+    private boolean ifEof(String candidate) {
+        int START_STATE = 0;
+        int TERMINAL_STATE = 3;
+
+        char next;
+
+        if (candidate.length() != 3) {
+            return false;
+        }
+
+        int state = START_STATE;
+        for (int i = 0; i < candidate.length(); i++) {
+            next = candidate.charAt(i);
+            switch (state) {
+                case 0:
+                    switch (next) {
+                        case 'e':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 1:
+                    switch (next) {
+                        case 'o':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+
+                case 2:
+                    switch (next) {
+                        case 'f':
+                            state++;
+                            break;
+                        default:
+                            state = -1;
+                    }
+                    break;
+            }
+        }
+
+        if (state == TERMINAL_STATE)
+            return true;
+        else
+            return false;
     }
 
     private boolean isDot(String candidate) {
