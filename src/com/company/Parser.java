@@ -387,16 +387,17 @@ public class Parser {
                 break;
             case CASE:
                 read(Token.TYPE.CASE);
+                int childCountCase = 1;
                 EXPRESSION();
                 if (!read(Token.TYPE.OF)) {
                     throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
-                CASECLAUSES();
-                OTHERWISECLAUSE();
+                childCountCase = childCountCase + CASECLAUSES();
+                childCountCase = childCountCase + OTHERWISECLAUSE();
                 if (!read(Token.TYPE.END)) {
                     throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
                 }
-                buildTree("case", 3);
+                buildTree("case", childCountCase);
                 break;
             case READ:
                 int childCountRead = 1;
@@ -432,18 +433,21 @@ public class Parser {
         }
     }
     //CORRECTED
-    private void CASECLAUSES() throws LexicalException, ParseException, IOException {
+    private int CASECLAUSES() throws LexicalException, ParseException, IOException {
+        int childCount = 1;
         CASECLAUSE();
         if (!read(Token.TYPE.SEMICOLON)) {
             throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
         while (nextToken.getType() == Token.TYPE.INTEGER || nextToken.getType() == Token.TYPE.CHAR ||
                 nextToken.getType() == Token.TYPE.IDENTIFIER) {
+            childCount = childCount + 1;
             CASECLAUSE();
             if (!read(Token.TYPE.SEMICOLON)) {
                 throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
         }
+        return childCount;
     }
 
     private void CASECLAUSE() throws LexicalException, ParseException, IOException {
@@ -794,16 +798,19 @@ public class Parser {
         }
     }
 
-    private void OTHERWISECLAUSE() throws LexicalException, ParseException, IOException {
+    private int OTHERWISECLAUSE() throws LexicalException, ParseException, IOException {
+        int childCount = 0;
         switch (nextToken.getType()) {
             case OTHERWISE:
                 read(Token.TYPE.OTHERWISE);
                 STATEMENT();
                 buildTree("otherwise", 1);
+                childCount = childCount + 1;
                 break;
             default:
-                return;
+                break;
         }
+        return childCount;
     }
 
     private void CASEEXPRESSION() throws LexicalException, ParseException, IOException {
@@ -815,8 +822,8 @@ public class Parser {
     }
 
     private void buildTree(String functionName, int num_of_children) {
-        //System.out.println(functionName + "(" + Integer.toString(num_of_children) + ")");
-        //testInt = testInt + 1;
+        System.out.println(functionName + "(" + Integer.toString(num_of_children) + ")");
+        testInt = testInt + 1;
         Node p = null;
         for (int i = 1; i <= num_of_children; i = i + 1) {
             Node c = stack.pop();
