@@ -1,6 +1,6 @@
 package com.company;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.Stack;
 
 
@@ -12,46 +12,55 @@ public class Parser {
     String parsedString;
     Token nextToken;
     Stack<Node> stack;
+    String astFilePath;
     private Token.TYPE type;
     private int testInt = 1;
 
-    public Parser(Scanner scanner) throws IOException, LexicalException {
+    public Parser(Scanner scanner, String astFilePath) throws IOException, LexicalException {
         this.scanner = scanner;
         this.parsedString = "";
         this.nextToken = scanner.getNextValidToken();
         stack = new Stack<>();
+        this.astFilePath = astFilePath;
 
     }
 
     public void parseFile() throws IOException, LexicalException, ParseException {
         this.start();
-        traverseTree(stack.pop(), 0);
+        try {
+            File fout = new File(astFilePath);
+            FileOutputStream fos = new FileOutputStream(fout);
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+            traverseTree(stack.pop(), 0, bw);
+            bw.close();
+        } catch (IOException e) {
+            System.out.println("cannot create file, permission denied");
+        }
         System.out.println("PARSING COMPLETED");
-
 
     }
 
     private void start() throws LexicalException, ParseException, IOException {
-    if (read(Token.TYPE.START)) {
-        NAME();
-        if (read(Token.TYPE.COLON)) {
-            CONSTS();
-            TYPES();
-            DCLNS();
-            SUBPROGS();
-            BODY();
+        if (read(Token.TYPE.START)) {
             NAME();
-            if (!read(Token.TYPE.DOT)) {
+            if (read(Token.TYPE.COLON)) {
+                CONSTS();
+                TYPES();
+                DCLNS();
+                SUBPROGS();
+                BODY();
+                NAME();
+                if (!read(Token.TYPE.DOT)) {
+                    throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
+                }
+                buildTree("program", 7);
+            } else {
                 throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
             }
-            buildTree("program", 7);
         } else {
             throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
-    } else {
-        throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
     }
-}
 
     private void NAME() throws LexicalException, ParseException, IOException {
         String val = nextToken.getValue();
@@ -148,6 +157,7 @@ public class Parser {
         LITLIST();
         buildTree("const", 2);
     }
+
     //corrected
     private void LITLIST() throws LexicalException, ParseException, IOException {
         int childCount = 1;
@@ -254,6 +264,7 @@ public class Parser {
             throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
         }
     }
+
     //CORRECTED
     private void DCLN() throws LexicalException, ParseException, IOException {
         int childCount = 1;
@@ -432,6 +443,7 @@ public class Parser {
                 return;
         }
     }
+
     //CORRECTED
     private int CASECLAUSES() throws LexicalException, ParseException, IOException {
         int childCount = 1;
@@ -556,6 +568,7 @@ public class Parser {
         }
     }
 
+    //Corrected
     private void TERM() throws LexicalException, ParseException, IOException {
         if (nextToken.getType() == Token.TYPE.PLUS || nextToken.getType() == Token.TYPE.MINUS || nextToken.getType() == Token.TYPE.OR) {
             if (nextToken.getType() == Token.TYPE.PLUS) {
@@ -588,29 +601,49 @@ public class Parser {
         }
     }
 
+    //corrected
     private void FACTOR() throws LexicalException, ParseException, IOException {
-        int childCountFactor = 1;
-        PRIMARY();
-        boolean multiply = read(Token.TYPE.MULTIPLY);
-        boolean divide = read(Token.TYPE.FORWARD_SLASH);
-        boolean and = read(Token.TYPE.AND);
-        boolean mod = read(Token.TYPE.MOD);
-        while (multiply || divide || and || mod) {
-            childCountFactor = childCountFactor + 1;
-            PRIMARY();
-            if (multiply) {
-                buildTree("*", childCountFactor);
-            } else if (divide) {
-                buildTree("/", childCountFactor);
-            } else if (and) {
-                buildTree("and", childCountFactor);
-            } else if (mod) {
-                buildTree("mod", childCountFactor);
+        if (nextToken.getType() == Token.TYPE.MULTIPLY || nextToken.getType() == Token.TYPE.FORWARD_SLASH || nextToken.getType()
+                == Token.TYPE.AND || nextToken.getType() == Token.TYPE.MOD) {
+            if (nextToken.getType() == Token.TYPE.MULTIPLY) {
+                read(Token.TYPE.MULTIPLY);
+                PRIMARY();
+                buildTree("*", 2);
+                if (nextToken.getType() == Token.TYPE.MULTIPLY || nextToken.getType() == Token.TYPE.FORWARD_SLASH || nextToken.getType()
+                        == Token.TYPE.AND || nextToken.getType() == Token.TYPE.MOD) {
+                    FACTOR();
+                }
+            } else if (nextToken.getType() == Token.TYPE.FORWARD_SLASH) {
+                read(Token.TYPE.FORWARD_SLASH);
+                PRIMARY();
+                buildTree("/", 2);
+                if (nextToken.getType() == Token.TYPE.MULTIPLY || nextToken.getType() == Token.TYPE.FORWARD_SLASH || nextToken.getType()
+                        == Token.TYPE.AND || nextToken.getType() == Token.TYPE.MOD) {
+                    FACTOR();
+                }
+            } else if (nextToken.getType() == Token.TYPE.AND) {
+                read(Token.TYPE.AND);
+                PRIMARY();
+                buildTree("and", 2);
+                if (nextToken.getType() == Token.TYPE.MULTIPLY || nextToken.getType() == Token.TYPE.FORWARD_SLASH || nextToken.getType()
+                        == Token.TYPE.AND || nextToken.getType() == Token.TYPE.MOD) {
+                    FACTOR();
+                }
+            } else {
+                read(Token.TYPE.MOD);
+                PRIMARY();
+                buildTree("mod", 2);
+                if (nextToken.getType() == Token.TYPE.MULTIPLY || nextToken.getType() == Token.TYPE.FORWARD_SLASH || nextToken.getType()
+                        == Token.TYPE.AND || nextToken.getType() == Token.TYPE.MOD) {
+                    FACTOR();
+                }
             }
-            multiply = read(Token.TYPE.MULTIPLY);
-            divide = read(Token.TYPE.FORWARD_SLASH);
-            and = read(Token.TYPE.AND);
-            mod = read(Token.TYPE.MOD);
+        } else {
+            PRIMARY();
+            if (nextToken.getType() == Token.TYPE.MULTIPLY || nextToken.getType() == Token.TYPE.FORWARD_SLASH || nextToken.getType()
+                    == Token.TYPE.AND || nextToken.getType() == Token.TYPE.MOD) {
+                FACTOR();
+            }
         }
     }
 
@@ -845,17 +878,18 @@ public class Parser {
         stack.push(new Node(functionName + "(" + Integer.toString(num_of_children) + ")", p, null));
     }
 
-    private void traverseTree(Node root, int dotCount) {
+    private void traverseTree(Node root, int dotCount, BufferedWriter bw) throws IOException {
 
         if (root == null) {
             return;
         } else {
             for (int i = 0; i < dotCount; i++) {
-                System.out.print(". ");
+                bw.write(". ");
             }
-            System.out.println(root.getVal());
-            traverseTree(root.getLeft(), dotCount + 1);
-            traverseTree(root.getRight(), dotCount);
+            bw.write(root.getVal());
+            bw.newLine();
+            traverseTree(root.getLeft(), dotCount + 1, bw);
+            traverseTree(root.getRight(), dotCount, bw);
 
         }
     }
