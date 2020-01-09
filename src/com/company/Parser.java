@@ -557,24 +557,34 @@ public class Parser {
     }
 
     private void TERM() throws LexicalException, ParseException, IOException {
-        int childCountTerm = 1;
-        FACTOR();
-        boolean plus = read(Token.TYPE.PLUS);
-        boolean minus = read(Token.TYPE.MINUS);
-        boolean or = read(Token.TYPE.OR);
-        while (plus || minus || or) {
-            childCountTerm = childCountTerm + 1;
-            FACTOR();
-            if (plus) {
-                buildTree("+", childCountTerm);
-            } else if (minus) {
-                buildTree("-", childCountTerm);
-            } else if (or) {
-                buildTree("or", childCountTerm);
+        if (nextToken.getType() == Token.TYPE.PLUS || nextToken.getType() == Token.TYPE.MINUS || nextToken.getType() == Token.TYPE.OR) {
+            if (nextToken.getType() == Token.TYPE.PLUS) {
+                read(Token.TYPE.PLUS);
+                FACTOR();
+                buildTree("+", 2);
+                if (nextToken.getType() == Token.TYPE.PLUS || nextToken.getType() == Token.TYPE.MINUS || nextToken.getType() == Token.TYPE.OR) {
+                    TERM();
+                }
+            } else if (nextToken.getType() == Token.TYPE.MINUS) {
+                read(Token.TYPE.MINUS);
+                FACTOR();
+                buildTree("-", 2);
+                if (nextToken.getType() == Token.TYPE.PLUS || nextToken.getType() == Token.TYPE.MINUS || nextToken.getType() == Token.TYPE.OR) {
+                    TERM();
+                }
+            } else {
+                read(Token.TYPE.OR);
+                FACTOR();
+                buildTree("or", 2);
+                if (nextToken.getType() == Token.TYPE.PLUS || nextToken.getType() == Token.TYPE.MINUS || nextToken.getType() == Token.TYPE.OR) {
+                    TERM();
+                }
             }
-            plus = read(Token.TYPE.PLUS);
-            minus = read(Token.TYPE.MINUS);
-            or = read(Token.TYPE.OR);
+        } else {
+            FACTOR();
+            if (nextToken.getType() == Token.TYPE.PLUS || nextToken.getType() == Token.TYPE.MINUS || nextToken.getType() == Token.TYPE.OR) {
+                TERM();
+            }
         }
     }
 
@@ -614,6 +624,7 @@ public class Parser {
             case PLUS:
                 read(Token.TYPE.PLUS);
                 PRIMARY();
+                buildTree("+", 1);
                 break;
             case NOT:
                 read(Token.TYPE.NOT);
@@ -792,6 +803,7 @@ public class Parser {
 
     }
 
+    //TODO add buildTree method
     private void STRINGNODE() throws LexicalException, ParseException, IOException {
         if (!read(Token.TYPE.STRING)) {
             throw new ParseException("Parse error occured at line " + nextToken.getLineNumber() + " " + nextToken.getValue());
@@ -822,8 +834,8 @@ public class Parser {
     }
 
     private void buildTree(String functionName, int num_of_children) {
-        System.out.println(functionName + "(" + Integer.toString(num_of_children) + ")");
-        testInt = testInt + 1;
+        //System.out.println(functionName + "(" + Integer.toString(num_of_children) + ")");
+        //testInt = testInt + 1;
         Node p = null;
         for (int i = 1; i <= num_of_children; i = i + 1) {
             Node c = stack.pop();
